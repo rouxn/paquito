@@ -59,6 +59,7 @@ var FRM = function () {
 	var _properties = {
 		payload: '', // Content of the frame
 		checkseq: '', // Check sequence computed before sending
+		id: 0,
 	};
 	
 	/**
@@ -71,8 +72,13 @@ var FRM = function () {
 	var _create = function (length, errorRate) {
 		_properties.payload = _generatePayload(length);
 		_properties.checkseq = _crc32();
-
+		_properties.id = _nextId();
+		
 		_randomError(errorRate);
+	};
+	
+	var _nextId = function () {
+		return _properties.id+1;
 	};
 	
 	/**
@@ -198,11 +204,25 @@ var FRM = function () {
 		return _properties.checkseq;
 	};
 	
+	/**
+	 * Set or return frame identifier
+	 * 
+	 * @param {Integer} id
+	 */
+	var _frameId = function (id) {
+		if (id != null) {
+			_properties.id = id;
+		} else {
+			return _properties.id;
+		}
+	};
+	
 	return {
 		payload: _payload,
 		checkseq: _checkseq,
 		crc: _crc32,
 		debug: _setDebugger,
 		create: _create,
+		id: _frameId,
 	};
 }();

@@ -36,9 +36,11 @@ var PKT = function () {
 	};
 
 	var _test = function () {
-		_frame.create(50, 0.4);
-		_debug(_frame.payload());
-		_debug(_frame.checkseq() == _frame.crc());
+		for (var i=0; i < 3; i++) {
+			_frame.create(50, 0.4);
+			_debug(_frame.id());
+			_debug(_frame.checkseq() == _frame.crc());
+		}
 	};
 	
 	/**
@@ -51,6 +53,7 @@ var PKT = function () {
 		}
 
 		_frame.debug(_debug);
+		_sender.debug(_debug);
 		
 		_debug('Initialized');
 		
