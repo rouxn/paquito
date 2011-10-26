@@ -1,2 +1,7 @@
 .settings
 .project
+*.swp
+*.aux
+*.log
+*.toc
+*.pdf
