@@ -2,6 +2,12 @@
  * Initialize frame, create content, compute verifications and create error.
  */
 var FRM = function () {
+	String.prototype.replaceAt=function(index, char) {
+	      return this.substr(0, index) + char + this.substr(index+char.length);
+	};
+	
+	var _debug; // Debugger function. Should be given by orchestrator
+	var _maxPayloadLength = 1500;
 	
 	var _crc32poly = 	'00000000 77073096 EE0E612C 990951BA 076DC419 706AF48F ' + 
 						'E963A535 9E6495A3 0EDB8832 79DCB8A4 E0D5E91E 97D2D988 ' +
@@ -47,14 +53,69 @@ var FRM = function () {
 						'54DE5729 23D967BF B3667A2E C4614AB8 5D681B02 2A6F2B94 ' +
 						'B40BBE37 C30C8EA1 5A05DF1B 2D02EF8D';
 	
-	var _settings = {
-			payload: '', 
+	/**
+	 * Properties of the current frame
+	 */
+	var _properties = {
+		payload: '', // Content of the frame
+		checkseq: '', // Check sequence computed before sending
 	};
 	
-	var _init = function (settings) {
+	/**
+	 * Create a frame with content and compute check sequence.
+	 * Randomly add error depending on error rate.
+	 * 
+	 * @param {Integer} length Length of the resulting frame
+	 * @param {Float} errorRate Between 0 and 1
+	 */
+	var _create = function (length, errorRate) {
+		_properties.payload = _generatePayload(length);
+		_properties.checkseq = _crc32();
+
+		_randomError(errorRate);
+	};
+	
+	/**
+	 * Generate random string of length
+	 * 
+	 * @param {Integer} length
+	 */
+	var _generatePayload = function (length) {
+		var chars = '0123456789ABCDEF'.split('');
+	    
+	    if (!length) {
+	        length = Math.floor(Math.random() * _maxPayloadLength);
+	    }
+	    
+	    var str = '';
+	    for (var i = 0; i < length; i++) {
+	        str += chars[Math.floor(Math.random() * chars.length)];
+	    }
+	    
+	    return str;
+	};
+	
+	/**
+	 * Randomly add error to frame
+	 * 
+	 * @param {Float} errorRate
+	 */
+	var _randomError = function (errorRate) {
+		if (Math.random() > errorRate) {
+			return;
+		}
 		
+		_debug('Error introduced');
+
+		var errorLocation = Math.floor(Math.random() * _properties.payload.length);
+		_properties.payload = _properties.payload.replaceAt(errorLocation, 'X');
 	};
 	
+	/**
+	 * Encode a string to UTF-8.
+	 * 
+	 * @parem {String} string
+	 */
 	var _utf8encode = function (string) {
 		string = string.replace(/\r\n/g, '\n');
 		var utftext = '';
@@ -81,8 +142,15 @@ var FRM = function () {
 		return utftext;
 	};
 	
+	/**
+	 * Compute CRC32 on payload
+	 * 
+	 * @param {String} crc Optional start sequence to concatenate frame CRC
+	 * 
+	 *  e.g: _crc32('Hello World!') == _crc32('World!', _crc32('Hello '))
+	 */
 	var _crc32 = function (crc) {
-		str = _utf8encode(_settings.payload);
+		str = _utf8encode(_properties.payload);
 	 
 		if (typeof(crc) == 'undefined') { 
 			crc = 0; 
@@ -101,17 +169,40 @@ var FRM = function () {
 		return crc ^ (-1);
 	};
 	
+	/**
+	 * Set of return payload.
+	 * 
+	 * @param {String} content
+	 */
 	var _payload = function (content) {
 		if (content != null) {
-			_settings.payload = content;
+			_properties.payload = content;
 		} else {
-			return _settings.payload;
+			return _properties.payload;
 		}
 	};
 	
+	/**
+	 * Set debugger
+	 * 
+	 * @param {Object} debug
+	 */
+	var _setDebugger = function (debug) {
+		_debug = debug;
+	};
+	
+	/**
+	 * @Rreturn {String} frame check sequence
+	 */
+	var _checkseq = function () {
+		return _properties.checkseq;
+	};
+	
 	return {
-		init: _init,
 		payload: _payload,
+		checkseq: _checkseq,
 		crc: _crc32,
+		debug: _setDebugger,
+		create: _create,
 	};
 }();

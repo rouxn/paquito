@@ -36,8 +36,9 @@ var PKT = function () {
 	};
 
 	var _test = function () {
-		_frame.payload('01010101');
-		_debug(_frame.crc());
+		_frame.create(50, 0.4);
+		_debug(_frame.payload());
+		_debug(_frame.checkseq() == _frame.crc());
 	};
 	
 	/**
@@ -48,6 +49,8 @@ var PKT = function () {
 		for(attr in settings) {
 			_settings[attr] = settings[attr];
 		}
+
+		_frame.debug(_debug);
 		
 		_debug('Initialized');
 		
