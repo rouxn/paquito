@@ -18,7 +18,7 @@ Modernizr.load([{
 //    }
 //  }
 }, {
-  load: [JS_DIR + 'frame.js', JS_DIR + 'sender.js', JS_DIR + 'reciever.js', JS_DIR + 'paquito.js' ],
+  load: [JS_DIR + 'frame.js', JS_DIR + 'sender.js', JS_DIR + 'receiver.js', JS_DIR + 'paquito.js' ],
   callback: function (url, result, key) {
     console.log(url + ' loaded');
   },
