@@ -12,7 +12,7 @@ Modernizr.load([{
 //      ({
         load: JS_LIBS_DIR + 'jquery-1.6.4.min.js',
         callback: function (url, result, key) {
-          console.log('Local jquery lib loaded');
+//          console.log('Local jquery lib loaded');
         }
 //      });
 //    }
@@ -20,7 +20,7 @@ Modernizr.load([{
 }, {
   load: [JS_DIR + 'frame.js', JS_DIR + 'host.js', JS_DIR + 'paquito.js' ],
   callback: function (url, result, key) {
-    console.log(url + ' loaded');
+//    console.log(url + ' loaded');
   },
   complete: function () {
     PKT.init();

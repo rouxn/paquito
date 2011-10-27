@@ -85,7 +85,7 @@ var PKT = function () {
 		_receiver.output(_receiverOut);
 		_receiver.receiver(_sender);
 		
-		_debug('Initialized');
+//		_debug('Initialized');
 		
 		_test();
 	};
