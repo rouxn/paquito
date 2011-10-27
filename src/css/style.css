@@ -83,6 +83,7 @@ article {
 }
 
 section {
+    overflow: auto;
 	border-radius: 8px;
 	margin: 1%;
 	box-shadow: 0 1px 4px rgba(0,0,0,.3);
@@ -90,8 +91,6 @@ section {
 
 section.outbox {
 	width: 25%;
-	height: 30em;
-	overflow: auto;
 	float: left;
 }
 
@@ -100,7 +99,6 @@ section.stats {
 }
 
 section.controls {
-    overflow: auto;
 }
 
 #controls {
@@ -136,6 +134,11 @@ section.controls h3 {
 	background-image: -ms-linear-gradient(top,#555,#333);
 	background-image: -o-linear-gradient(top,#555,#333);
 	background-image: linear-gradient(top,#555,#333);
+}
+
+section.outbox div {
+	overflow: auto;
+	height: 25em;
 }
 
 section li {

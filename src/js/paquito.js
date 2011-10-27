@@ -53,12 +53,12 @@ var PKT = function () {
 
 		_sender.errorRate(0.4);
 		_sender.frameLength(3000);
-		_sender.frameInterval(1600);
+		_sender.frameInterval(500);
 		
 		_receiver.distance(10000);
-		_receiver.bandwidth(1);
+		_receiver.bandwidth(5);
 		
-		_sender.send(null, 5);
+		_sender.send(null, 20);
 	};
 	
 	var _senderOut = function (msg) {
