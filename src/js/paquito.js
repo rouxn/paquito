@@ -5,8 +5,8 @@
  */
 var PKT = function () {
 	var _frame = FRM;
-	var _sender = SDR;
-	var _reciever = RCR;
+	var _sender = host();
+	var _receiver = host();
 	
 	var _settings = {
 		debug: true, // output debug info
@@ -28,6 +28,9 @@ var PKT = function () {
 				case 'console':
 					console.log(msg);
 					break;
+				case 'html':
+					$('body').append(msg+'<br />');
+					break;
 				default:
 					alert(msg);
 					break;
@@ -36,11 +39,10 @@ var PKT = function () {
 	};
 
 	var _test = function () {
-		for (var i=0; i < 3; i++) {
-			_frame.create(50, 0.4);
-			_debug(_frame.id());
-			_debug(_frame.checkseq() == _frame.crc());
-		}
+		_sender.frameLength(100);
+		_sender.errorRate(0.4);
+		
+		_sender.send();
 	};
 	
 	/**
@@ -53,7 +55,15 @@ var PKT = function () {
 		}
 
 		_frame.debug(_debug);
+
 		_sender.debug(_debug);
+		_sender.isSender(true);
+		_sender.receiver(_receiver);
+		_sender.frameObject(_frame);
+		
+		_receiver.debug(_debug);
+		_receiver.receiver(_sender);
+		_receiver.frameObject(_frame);
 		
 		_debug('Initialized');
 		
