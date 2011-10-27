@@ -36,11 +36,11 @@ function host() {
 		_output('Frame sended after ' + (new Date().getTime() - time) );
 		time = new Date().getTime();
 		
+		_properties.receiver.receive(_frame);				
 		
-		$(window).delay(_properties.frameInterval, 'sended').queue('sended', function(){ 
+		setTimeout(function () {
 			_send(frameLength, numFrame-1);
-			_properties.receiver.receive(_frame);				
-		}).dequeue('sended');
+		}, _properties.frameInterval);
 		
 	};
 	
@@ -50,10 +50,10 @@ function host() {
 	 * @param frame Received frame
 	 */
 	var _receive = function (frame ) {
-		$(window).delay(3000, 'r').queue('r', function(){
+		setTimeout(function () {
 			var time = new Date().getTime();
 			_output('#' + frame.id () + ', length: ' + frame.payload().length + ', elapsed: ' + (time-frame.created()));
-		}).dequeue('r');	
+		}, _delay());
 	};
 	
 	/**
