@@ -1,45 +1,65 @@
 /**
- * 
+ * Send or receive frames. Simulate transmission time. 
  */
 function host() {
-	var _debug;
+	var _output; // Output function
+	var _c = 2.3 * Math.pow (10,8); // Light speed in copper 
 
-	this._properties = {
-		sender: false,
-		receiver: null,
-		frameObj: null,
+	var _properties = {
+		sender: false, // Do we are sender or receiver?
+		receiver: null, // Where do we send frame
 		frameLength: 1000, // Assign static frame length
 		distance: 2000, // Distance between sender and receiver
-		frameInterval: 10,
-		frameLoss: 0.1,
-		errorRate: 0.4,
-		bandwith:0,
+		frameInterval: 10, // Interval between frames
+		frameLoss: 0.1, // Percents of lost frame in transmission
+		errorRate: 0.4, // Percents of error when sending a frame
+		bandwith:0, // Bandwidth between links in bits/s 
 	};
 	
-	var _c = 2.3 * Math.pow (10,8);
-	
+	/**
+	 * Send a frame to a the defined receiver
+	 * 
+	 * @param {Integer} frameLength
+	 */
 	var _send = function (frameLength) {
 		var length = frameLength || _properties.frameLength;
+		var _frame = frame();
 		
-		_properties.frameObj.create(length, _properties.errorRate);
+		_frame.create(length, _properties.errorRate);
+		_output('Frame sended');
 		
-		setTimeout ('_properties.receiver.receive(_properties.frameObj)',_delay());
-		
+		$(window).delay(_delay()).queue(function(){ 
+				_properties.receiver.receive(_frame);				
+				$(this).dequeue(); 
+		});
 	};
 	
+	/**
+	 * Receive a frame from a sender
+	 * 
+	 * @param frame Received frame
+	 */
+	var _receive = function (frame ) {
+		_output('Received frame ' + frame.id () + ', length: ' + frame.payload().length);
+		_output('Frame containing error: ' + !(frame.checkseq () == frame.crc ()));
+	};
+	
+	/**
+	 * Compute the delay to send a packet between hosts
+	 * 
+	 * @returns {Integer}  Transmit delay
+	 */
+	var _delay = function (){
+		var propagationTime = _properties.distance / _c;
+		var transmitTime = _properties.frameLength / _properties.bandwith;
+		return propagationTime + transmitTime;
+	};
+
 	var _receiver = function (receiver) {
 		if (receiver != null) {
 			_properties.receiver = receiver;
 		} else {
 			return _properties.reciever;
-		}
-	};
-	
-	var _frameObject = function (object) {
-		if (object != null) {
-			_properties.frameObj = object;
-		} else {
-			return _properties.frameObj;
 		}
 	};
 	
@@ -101,32 +121,14 @@ function host() {
 		
 	};
 	
-	/**
-	 * Set debugger
-	 * 
-	 * @param {Object} debug
-	 */
-	var _setDebugger = function (debug) {
-		_debug = debug;
-	};
-	
-	var _delay = function (){
-		var propagationTime = _properties.distance/_c ;
-		var transmitTime = _properties.frameLength / _properties.bandwith ;
-		return propagationTime + transmitTime ;
-	};
-	
-	var _receive = function (frame ) {
-		_debug ('Frame receive ID number : ' + frame.id ());
-		_debug ('Frame error ' + !(frame.checkseq () == frame.crc ()));
-		_debug('Frame length ' + frame.payload().length);
+	var _setOutput = function (output) {
+		_output = output;
 	};
 	
 	return {
-		debug: _setDebugger,
+		output: _setOutput,
 		send: _send,
 		receiver: _receiver,
-		frameObject: _frameObject,
 		frameLength: _frameLength,
 		errorRate: _errorRate,
 		distance: _distance,

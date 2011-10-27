@@ -1,13 +1,14 @@
 /**
  * Initialize frame, create content, compute verifications and create error.
  */
-var FRM = function () {
+var frameId = 0;
+
+function frame() {
 	String.prototype.replaceAt=function(index, char) {
 	      return this.substr(0, index) + char + this.substr(index+char.length);
 	};
 	
-	var _debug; // Debugger function. Should be given by orchestrator
-	var _maxPayloadLength = 1500;
+	var _maxPayloadLength = 1500; // TODO: Check if needed in futurr
 	
 	var _crc32poly = 	'00000000 77073096 EE0E612C 990951BA 076DC419 706AF48F ' + 
 						'E963A535 9E6495A3 0EDB8832 79DCB8A4 E0D5E91E 97D2D988 ' +
@@ -77,8 +78,11 @@ var FRM = function () {
 		_randomError(errorRate);
 	};
 	
+	/**
+	 * @returns {Integer} Next frame ID
+	 */
 	var _nextId = function () {
-		return _properties.id+1;
+		return (frameId++);
 	};
 	
 	/**
@@ -111,8 +115,6 @@ var FRM = function () {
 			return;
 		}
 		
-		_debug('Error introduced');
-
 		var errorLocation = Math.floor(Math.random() * _properties.payload.length);
 		_properties.payload = _properties.payload.replaceAt(errorLocation, 'X');
 	};
@@ -189,15 +191,6 @@ var FRM = function () {
 	};
 	
 	/**
-	 * Set debugger
-	 * 
-	 * @param {Object} debug
-	 */
-	var _setDebugger = function (debug) {
-		_debug = debug;
-	};
-	
-	/**
 	 * @Rreturn {String} frame check sequence
 	 */
 	var _checkseq = function () {
@@ -221,8 +214,7 @@ var FRM = function () {
 		payload: _payload,
 		checkseq: _checkseq,
 		crc: _crc32,
-		debug: _setDebugger,
 		create: _create,
 		id: _frameId,
 	};
-}();
+}
