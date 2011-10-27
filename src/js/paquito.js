@@ -4,14 +4,21 @@
  * @version 0.1
  */
 var PKT = function () {
-	var _frame = FRM;
 	var _sender = host();
 	var _receiver = host();
 	
 	var _settings = {
 		debug: true, // output debug info
-		debugMode: 'console', // debug output method ('console' or 'alert')
+		debugMode: 'console', // debug output method ('console', 'html' or 'alert')
 	};
+	
+	
+	/**
+	 * @returns {Integer} Timestamp
+	 */
+	var _timestamp = function () {
+		return new Date().getTime();
+	}
 	
 	/**
 	 * Output Paquito debug information
@@ -38,12 +45,29 @@ var PKT = function () {
 		}
 	};
 
+	/**
+	 * Test the system!
+	 */
 	var _test = function () {
+		_receiver.bandwidth(56 * Math.pow(2, 10));
+
 		_sender.errorRate(0.4);
+		_sender.frameLength(3000);
+		_sender.bandwidth(1);
 		
-		_sender.send();
+		for (var i=0; i < 5; i++) {
+			_sender.send();
+		}
 	};
 	
+	var _senderOut = function (msg) {
+		$('#sender').append('<li>(' + _timestamp() + ') ' + msg + '</li>');
+	};
+	
+	var _receiverOut = function (msg) {
+		$('#receiver').append('<li>(' + _timestamp() + ') ' + msg + '</li>');
+	};
+
 	/**
 	 * Initialize Paquito
 	 * @param {Object} settings
@@ -53,19 +77,13 @@ var PKT = function () {
 			_settings[attr] = settings[attr];
 		}
 
-		_frame.debug(_debug);
-
-		_sender.debug(_debug);
+		
+		_sender.output(_senderOut);
 		_sender.isSender(true);
 		_sender.receiver(_receiver);
-		_sender.frameObject(_frame);
-		_sender.frameLength(3000000);
-		_sender.bandwidth(0.00000000000000001);
 		
-		_receiver.debug(_debug);
+		_receiver.output(_receiverOut);
 		_receiver.receiver(_sender);
-		_receiver.frameObject(_frame);
-		_receiver.bandwidth(56 * Math.pow(2, 10));
 		
 		_debug('Initialized');
 		

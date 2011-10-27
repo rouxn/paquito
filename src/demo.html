@@ -22,27 +22,41 @@
       <h2>A packet-oriented network simulation</h2>
     </header>
 
-    <nav role="navigation">
-      <ul>
-        <li><a href="#">A menu link</a></li>
-      </ul>
-    </nav>
-
     <article role="article">
+    
+      <section role="region" class="controls">
+        <h3>Simulation control</h3>
+        
+        <div id="controls">
+          <p>The parameters of the simulation will be there.</p>
+        </div>
+      </section>
 
-      <section role="region">
-        <h3>A page title</h3>
+      <section role="region" class="outbox">
+        <h3>Sender informations</h3>
 
-        <p>Some content</p>
+        <ul id="sender">
+        </ul>
+      </section>
+
+      <section role="region" class="outbox">
+        <h3>Receiver informations</h3>
+
+        <ul id="receiver">
+        </ul>
+      </section>
+      
+      <section role="region" class="outbox stats">
+        <h3>Network statistics</h3>
       </section>
 
 
-      <footer role="contentinfo">
-        <p>Page footer</p>
-      </footer>
 
     </article>
     
+    <footer role="contentinfo">
+      <p>&copy; 2042 The Paquito project</p>
+    </footer>
   </div>
 </body>
 </html>
