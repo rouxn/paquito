@@ -18,7 +18,7 @@ var PKT = function () {
 	 */
 	var _timestamp = function () {
 		return new Date().getTime();
-	}
+	};
 	
 	/**
 	 * Output Paquito debug information
@@ -53,11 +53,12 @@ var PKT = function () {
 
 		_sender.errorRate(0.4);
 		_sender.frameLength(3000);
-		_sender.bandwidth(1);
+		_sender.frameInterval(2000);
 		
-		for (var i=0; i < 5; i++) {
-			_sender.send();
-		}
+		_receiver.distance(10000);
+		_receiver.bandwidth(10);
+		
+		_sender.send(null, 5);
 	};
 	
 	var _senderOut = function (msg) {

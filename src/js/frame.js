@@ -61,6 +61,7 @@ function frame() {
 		payload: '', // Content of the frame
 		checkseq: '', // Check sequence computed before sending
 		id: 0,
+		created: 0, // Timestamp frame creation
 	};
 	
 	/**
@@ -74,6 +75,7 @@ function frame() {
 		_properties.payload = _generatePayload(length);
 		_properties.checkseq = _crc32();
 		_properties.id = _nextId();
+		_properties.created = new Date().getTime();
 		
 		_randomError(errorRate);
 	};
@@ -210,11 +212,16 @@ function frame() {
 		}
 	};
 	
+	var _created = function () {
+		return _properties.created;
+	};
+	
 	return {
 		payload: _payload,
 		checkseq: _checkseq,
 		crc: _crc32,
 		create: _create,
 		id: _frameId,
+		created: _created,
 	};
 }

@@ -4,6 +4,7 @@
 function host() {
 	var _output; // Output function
 	var _c = 2.3 * Math.pow (10,8); // Light speed in copper 
+	var time = new Date().getTime();
 
 	var _properties = {
 		sender: false, // Do we are sender or receiver?
@@ -20,18 +21,27 @@ function host() {
 	 * Send a frame to a the defined receiver
 	 * 
 	 * @param {Integer} frameLength
+	 * @param {Integer} numFrame
 	 */
-	var _send = function (frameLength) {
+	var _send = function (frameLength, numFrame) {
+		if (numFrame < 1) {
+			return;
+		}
+		
 		var length = frameLength || _properties.frameLength;
 		var _frame = frame();
 		
 		_frame.create(length, _properties.errorRate);
-		_output('Frame sended');
+
+		_output('Frame sended after ' + (new Date().getTime() - time) );
+		time = new Date().getTime();
 		
-		$(window).delay(_delay()).queue(function(){ 
-				_properties.receiver.receive(_frame);				
-				$(this).dequeue(); 
-		});
+		
+		$(window).delay(_properties.frameInterval, 'sended').queue('sended', function(){ 
+			_send(frameLength, numFrame-1);
+			_properties.receiver.receive(_frame);				
+		}).dequeue('sended');
+		
 	};
 	
 	/**
@@ -40,8 +50,10 @@ function host() {
 	 * @param frame Received frame
 	 */
 	var _receive = function (frame ) {
-		_output('Received frame ' + frame.id () + ', length: ' + frame.payload().length);
-		_output('Frame containing error: ' + !(frame.checkseq () == frame.crc ()));
+		$(window).delay(3000, 'r').queue('r', function(){
+			var time = new Date().getTime();
+			_output('#' + frame.id () + ', length: ' + frame.payload().length + ', elapsed: ' + (time-frame.created()));
+		}).dequeue('r');	
 	};
 	
 	/**
