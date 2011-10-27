@@ -39,7 +39,6 @@ var PKT = function () {
 	};
 
 	var _test = function () {
-		_sender.frameLength(100);
 		_sender.errorRate(0.4);
 		
 		_sender.send();
@@ -60,10 +59,13 @@ var PKT = function () {
 		_sender.isSender(true);
 		_sender.receiver(_receiver);
 		_sender.frameObject(_frame);
+		_sender.frameLength(3000000);
+		_sender.bandwidth(0.00000000000000001);
 		
 		_receiver.debug(_debug);
 		_receiver.receiver(_sender);
 		_receiver.frameObject(_frame);
+		_receiver.bandwidth(56 * Math.pow(2, 10));
 		
 		_debug('Initialized');
 		

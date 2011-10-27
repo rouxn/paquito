@@ -4,7 +4,7 @@
 function host() {
 	var _debug;
 
-	var _properties = {
+	this._properties = {
 		sender: false,
 		receiver: null,
 		frameObj: null,
@@ -13,19 +13,23 @@ function host() {
 		frameInterval: 10,
 		frameLoss: 0.1,
 		errorRate: 0.4,
+		bandwith:0,
 	};
+	
+	var _c = 2.3 * Math.pow (10,8);
 	
 	var _send = function (frameLength) {
 		var length = frameLength || _properties.frameLength;
 		
 		_properties.frameObj.create(length, _properties.errorRate);
-
-		_debug('Frame error: ' + !(_properties.frameObj.checkseq() == _properties.frameObj.crc()));
+		
+		setTimeout ('_properties.receiver.receive(_properties.frameObj)',_delay());
+		
 	};
 	
 	var _receiver = function (receiver) {
 		if (receiver != null) {
-			_properties.reciever = receiver;
+			_properties.receiver = receiver;
 		} else {
 			return _properties.reciever;
 		}
@@ -87,6 +91,16 @@ function host() {
 		}
 	}; 
 	
+	var _bandwidth = function (bandwidth){
+		if( bandwidth != null ) {
+			_properties.bandwith = bandwidth ;
+		}
+		else {
+			return _properties.bandwith ;
+		}
+		
+	};
+	
 	/**
 	 * Set debugger
 	 * 
@@ -94,6 +108,18 @@ function host() {
 	 */
 	var _setDebugger = function (debug) {
 		_debug = debug;
+	};
+	
+	var _delay = function (){
+		var propagationTime = _properties.distance/_c ;
+		var transmitTime = _properties.frameLength / _properties.bandwith ;
+		return propagationTime + transmitTime ;
+	};
+	
+	var _receive = function (frame ) {
+		_debug ('Frame receive ID number : ' + frame.id ());
+		_debug ('Frame error ' + !(frame.checkseq () == frame.crc ()));
+		_debug('Frame length ' + frame.payload().length);
 	};
 	
 	return {
@@ -107,5 +133,7 @@ function host() {
 		frameInterval: _frameInterval,
 		frameLoss: _frameLoss,
 		isSender: _isSender,
+		bandwidth: _bandwidth,
+		receive: _receive,
 	};
 }
