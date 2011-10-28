@@ -48,6 +48,15 @@ html {
 	background: #f9f9f9;
 }
 
+.hide {
+    display: block;
+    border: 0; 
+    clear: both; 
+    margin: 0;
+    padding: 0; 
+    visibility: hidden;
+}
+
 header {
 	color: white;
 	font-weight: bold;
@@ -150,14 +159,12 @@ section.controls {
     -moz-box-shadow: 0 1px 4px rgba(0,0,0,.3);
     -webkit-box-shadow: 0 1px 4px rgba(0,0,0,.3);
     box-shadow: 0 1px 4px rgba(0,0,0,.3);
-    display: block;
 	text-align: center;
 	cursor: pointer;
 	position: relative;
 	margin: .5em 5px;
 	padding: 0;
-	clear: both;
-	padding: .8em 2em;
+    padding: .8em 2em;
 }
 
 section h3 {

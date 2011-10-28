@@ -27,7 +27,7 @@
       <section role="region" class="controls">
         <h3>Simulation controls</h3>
         
-        <form id="controls" action="" method="post">
+        <form id="controls" action="#" method="post">
           <div class="box">
           <p>
             <label for="bandwidth">Bandwidth</label>
@@ -42,39 +42,41 @@
           
           <p>
             <label for="frameLoss">Frame loss (%)</label>
-            <input type="text" name="frameLoss" id="frameLoss" value="1">
+            <input type="text" name="frameLoss" id="frameLoss" value="1" />
           </p>
           
           <p>
             <label for="errorRate">Error rate (%)</label>
-            <input type="text" name="errorRate" id="errorRate" value="10">
+            <input type="text" name="errorRate" id="errorRate" value="10" />
           </p>
           </div>
           
           <div class="box">
           <p>
             <label for="distance">Host distance (meters)</label>
-            <input type="text" name="distance" id="distance" value="2000">
+            <input type="text" name="distance" id="distance" value="2000" />
           </p>
           
           <p>
             <label for="framePayload">Frame payload length (bits)</label>
-            <input type="text" name="framePayload" id="framePayload" value="1000">
+            <input type="text" name="framePayload" id="framePayload" value="1000" />
           </p>
           
           <p>
             <label for="numFrame">Number of frame</label>
-            <input type="text" name="numFrame" id="numFrame" value="10">            
+            <input type="text" name="numFrame" id="numFrame" value="10" />            
           </p>
           
           <p>
             <label for="frameInterval">Frame sending interval (ms)</label>
-            <input type="text" name="frameInterval" id="frameInterval" value="40">
+            <input type="text" name="frameInterval" id="frameInterval" value="40" />
           </p>
           </div>
-
+            
+          <hr class="hide" />
           <p>   
-            <input type="submit" name="launch" value="Launch simulation" id="launch">
+            <input type="submit" name="launch" value="Launch simulation" id="launch" />
+            <input type="submit" name="clear" value="Clear" id="clear" />
           </p>
         </form>
       </section>

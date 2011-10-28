@@ -44,23 +44,6 @@ var PKT = function () {
 			}
 		}
 	};
-
-	/**
-	 * Test the system!
-	 */
-	var _test = function () {
-		_receiver.bandwidth(56 * Math.pow(2, 10));
-
-		_sender.errorRate(0.4);
-		_sender.frameLength(300);
-		_sender.frameInterval(100);
-		_sender.frameLoss(0.3);
-		
-		_receiver.distance(100);
-		_receiver.bandwidth(3);
-		
-		_sender.send(null, 10);
-	};
 	
 	var _senderOut = function (msg) {
 		$('#sender').append('<li>' + msg + '</li>');
@@ -85,7 +68,7 @@ var PKT = function () {
 		});
 		
 		$('#framePayload').spinbox({
-			min: 1,
+			min: 100,
 			max: 1500,
 			step: 100,
 		});
@@ -105,14 +88,32 @@ var PKT = function () {
 		$('#frameLoss').spinbox({
 			min: 1,
 			max: 100,
-			step: 10,
+			step: 5,
 		});
 		
 		$('#errorRate').spinbox({
 			min: 1,
 			max: 100,
-			step: 10,
+			step: 5,
 		});
+	};
+	
+	var _setSimulationProperties = function () {
+		_sender.errorRate($('#errorRate'). val() / 100);
+		_sender.frameLength($('#framePayload').val());
+		_sender.frameInterval($('#frameInterval').val());
+		_sender.frameLoss($('#frameLoss').val() / 100);
+		
+		_receiver.distance($('#distance').val());
+		_receiver.bandwidth($('#bandwidth').val() * $('#bandwidthUnit').val());
+		
+		_sender.send(null, $('#numFrame').val());
+	};
+	
+	var _resetSimulation = function () {
+		frameId = 0;
+		$('#sender').html('');
+		$('#receiver').html('');
 	};
 	
 	/**
@@ -125,7 +126,6 @@ var PKT = function () {
 		}
 		
 		_setSpinboxes();
-
 		
 		_sender.output(_senderOut);
 		_sender.isSender(true);
@@ -133,10 +133,17 @@ var PKT = function () {
 		
 		_receiver.output(_receiverOut);
 		_receiver.receiver(_sender);
+
+		$('#launch').click(function () {
+			_setSimulationProperties();
+			return false;
+		});
 		
-//		_debug('Initialized');
-		
-		_test();
+		$('#clear').click(function () {
+			_resetSimulation();
+			return false;
+		});
+
 	};
 	
 	// expose public properties and methods
