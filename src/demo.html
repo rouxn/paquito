@@ -27,9 +27,52 @@
       <section role="region" class="controls">
         <h3>Simulation controls</h3>
         
-        <div id="controls">
-          <p>The parameters of the simulation will be there.</p>
-        </div>
+        <form id="controls" action="" method="post">
+          <p>
+            <label for="bandwidth">Bandwidth</label>
+            <input type="text" name="bandwidth" id="bandwith" value="56">
+            <select id="bandwidthUnit" name="bandwidthUnit">
+              <option value="1">b/s</option>
+              <option value="1024" selected="selected">Kb/s</option>
+              <option value="1048576">Mb/s</option>
+              <option value="1073741824">Gb/s</option>
+            </select>
+          </p>
+          
+          <p>
+            <label for="distance">Host distance (meters)</label>
+            <input type="text" name="distance" id="distance" value="2000">
+          </p>
+          
+          <p>
+            <label for="frameLength">Frame payload length (bits)</label>
+            <input type="text" name="frameLength" id="frameLength" value="1000">
+          </p>
+          
+          <p>
+            <label for="numFrame">Number of frame</label>
+            <input type="text" name="numFrame" id="numFrame" value="10">            
+          </p>
+          
+          <p>
+            <label for="frameInterval">Frame sending interval (ms)</label>
+            <input type="text" name="frameInterval" id="frameInterval" value="40">
+          </p>
+          
+          <p>
+            <label for="frameLoss">Frame loss (%)</label>
+            <input type="text" name="frameLoss" id="frameLoss" value="1">
+          </p>
+          
+          <p>
+            <label for="errorRate">Error rate (%)</label>
+            <input type="text" name="errorRate" id="errorRate" value="10">
+          </p>
+          
+          <p>   
+            <input type="submit" name="launch" value="Launch simulation">
+          </p>
+        </form>
       </section>
 
       <section role="region" class="outbox">

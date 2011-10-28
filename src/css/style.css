@@ -90,12 +90,12 @@ section {
 }
 
 section.outbox {
-	width: 25%;
+	width: 20%;
 	float: left;
 }
 
 section.stats {
-	width: 43%;
+	width: 53%;
 }
 
 section.controls {
