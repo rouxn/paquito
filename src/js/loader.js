@@ -18,7 +18,7 @@ Modernizr.load([{
 //    }
 //  }
 }, {
-  load: [JS_DIR + 'frame.js', JS_DIR + 'host.js', JS_DIR + 'paquito.js' ],
+  load: [JS_DIR + 'frame.js', JS_DIR + 'host.js', JS_LIBS_DIR + 'jquery.spinbox.js', JS_DIR + 'paquito.js' ],
   callback: function (url, result, key) {
 //    console.log(url + ' loaded');
   },

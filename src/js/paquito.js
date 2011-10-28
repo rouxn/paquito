@@ -71,6 +71,50 @@ var PKT = function () {
 		$('#receiver').append('<li'+stat+'>' + msg + '</li>');
 	};
 
+	var _setSpinboxes = function () {
+		$('#bandwidth').spinbox({
+			min: 1,
+			max: 1023,
+			step: 10,
+		});
+		
+		$('#distance').spinbox({
+			min: 1,
+			max: 2500,
+			step: 100,
+		});
+		
+		$('#framePayload').spinbox({
+			min: 1,
+			max: 1500,
+			step: 100,
+		});
+		
+		$('#numFrame').spinbox({
+			min: 1,
+			max: 1000,
+			step: 2,
+		});
+		
+		$('#frameInterval').spinbox({
+			min: 1,
+			max: 1000,
+			step: 20,
+		});
+		
+		$('#frameLoss').spinbox({
+			min: 1,
+			max: 100,
+			step: 10,
+		});
+		
+		$('#errorRate').spinbox({
+			min: 1,
+			max: 100,
+			step: 10,
+		});
+	};
+	
 	/**
 	 * Initialize Paquito
 	 * @param {Object} settings
@@ -79,6 +123,8 @@ var PKT = function () {
 		for(attr in settings) {
 			_settings[attr] = settings[attr];
 		}
+		
+		_setSpinboxes();
 
 		
 		_sender.output(_senderOut);
