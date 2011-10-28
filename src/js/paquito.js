@@ -52,21 +52,23 @@ var PKT = function () {
 		_receiver.bandwidth(56 * Math.pow(2, 10));
 
 		_sender.errorRate(0.4);
-		_sender.frameLength(3000);
-		_sender.frameInterval(500);
+		_sender.frameLength(300);
+		_sender.frameInterval(100);
+		_sender.frameLoss(0.3);
 		
-		_receiver.distance(10000);
-		_receiver.bandwidth(5);
+		_receiver.distance(100);
+		_receiver.bandwidth(3);
 		
-		_sender.send(null, 20);
+		_sender.send(null, 10);
 	};
 	
 	var _senderOut = function (msg) {
-		$('#sender').append('<li>(' + _timestamp() + ') ' + msg + '</li>');
+		$('#sender').append('<li>' + msg + '</li>');
 	};
 	
-	var _receiverOut = function (msg) {
-		$('#receiver').append('<li>(' + _timestamp() + ') ' + msg + '</li>');
+	var _receiverOut = function (msg, status) {
+		var stat = status ? ' class="'+status+'"' : ''
+		$('#receiver').append('<li'+stat+'>' + msg + '</li>');
 	};
 
 	/**

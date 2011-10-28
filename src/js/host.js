@@ -32,11 +32,12 @@ function host() {
 		var _frame = frame();
 		
 		_frame.create(length, _properties.errorRate);
-
-		_output('Frame sended after ' + (new Date().getTime() - time) );
-		time = new Date().getTime();
 		
-		_properties.receiver.receive(_frame);				
+		_output('Frame #' + _frame.id() + ' sended' );
+		
+		if (Math.random() > _properties.frameLoss) {
+			_properties.receiver.receive(_frame);							
+		}
 		
 		setTimeout(function () {
 			_send(frameLength, numFrame-1);
@@ -49,10 +50,12 @@ function host() {
 	 * 
 	 * @param frame Received frame
 	 */
-	var _receive = function (frame ) {
+	var _receive = function(frame) {
 		setTimeout(function () {
 			var time = new Date().getTime();
-			_output('#' + frame.id () + ', length: ' + frame.payload().length + ', elapsed: ' + (time-frame.created()));
+			
+			var clz = (frame.crc() == frame.checkseq()) ? null : 'error';
+			_output('Received frame #' + frame.id (), clz);
 		}, _delay());
 	};
 	
