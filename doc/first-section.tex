@@ -1,52 +1,67 @@
-\section{Sample section}
+\section{Proposal}
 
-Mauris sit amet semper tellus. Morbi accumsan pretium ante, ut congue
-felis laoreet a. Aliquam tincidunt ullamcorper ipsum, gravida facilisis
-nunc faucibus vitae. Pellentesque sapien ipsum, fringilla id semper nec,
-tincidunt non augue. Maecenas sagittis quam augue. Morbi nisl mi,
-lacinia sit amet dapibus sed, varius et velit. Cras pretium, lorem eget
-congue ornare, magna elit porta odio, quis aliquet nisl neque eu quam.
-Phasellus vel \LaTeX  eleifend enim.
+
+
+\subsection{Description}
 
 \begin{description}
-    \item First item
-    \item Second item
+    \item Protocol : Ethernet
+    \item MAC protocol : CSMA / CD
+    \item Computer language : JavaScript, HTML5
+    \item Platform : ALL
 \end{description}
 
-\subsection{A subsection}
-
-Fusce leo quam, vulputate et pharetra sed, venenatis et ligula. Aliquam
-vel justo orci. Quisque magna diam, vestibulum eget ultricies
-pellentesque, ultricies sit amet urna. Pellentesque lobortis ipsum sit
-amet felis vulputate interdum. Aliquam sed quam et urna tincidunt
-laoreet. Sed sed turpis quis elit aliquam fringilla. Suspendisse quis
-dolor non odio mattis ornare in at ante. Morbi vitae egestas libero.
-Aenean feugiat sodales nisl, quis placerat elit eleifend aliquet. Fusce
-ultricies diam a metus sagittis consectetur.
+\subsection{The high-level description of the simulation algorithm}
 
 
-Donec dictum placerat velit vulputate egestas. Vestibulum semper massa
-et tortor volutpat tristique. Aenean ac neque turpis, condimentum
-faucibus turpis. Nullam justo dolor, consectetur vel lobortis sed,
-euismod vel est. Etiam a diam rutrum dolor sagittis dictum. Vestibulum
-ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia
-Curae; Cras ac arcu in dui faucibus pretium a nec sapien. Suspendisse a
-auctor turpis. Suspendisse potenti. Donec ac metus in tortor fermentum
-ornare. Etiam sed lacus pharetra mauris gravida dignissim.
+\begin{center}
+\item Algorithm for CSMA /CD
+\includegraphics[scale=0.8]{ether.png}
+\end{center}
 
-\begin{alltt}
-alex@dellirious:~$ whereis ping
-ping: \hl{/bin/ping} /usr/share/man/man8/ping.8.gz
-\end{alltt}
+\newpage
 
-\subsubsection{Display a command within the text}
+\subsection{The mathematical formulae}
 
-This is an example of displaying a \verb+command+ within the text.
+\subsubsection{Synchronous data traffic}
+Packet arrival and inter arrival time are all uniform and deterministic.
+\begin{description}
+    \item Arrival process : packet size / bandwidth ( packets/sec)
+    \item Traffic load = packet arrival time rate * packet size
+    \item Average packet delay = transmission time for one packet
+    \item Delay Variance = 0 because intervals are equal.
+    \item Thoughput = $\frac{number of byte sent}{total time}$
+\end{description}
 
-\begin{enumerate}
-    \item \emph{lemonde.fr} located in france
-    \item \emph{bbc.co.uk} located in England
-    \item \emph{theaustralian.com.au} located in Autralia
-    \item \emph{baidu.com} located in China
-\end{enumerate}
+\subsubsection{Asynchronous data traffic}
+
+\begin{description}
+    \item Arrival process : $ \frac{e^{b} \cdot b^{k}}{k!}$ (Poisson distribution)
+    \item Traffic load = packet arrival time rate  (Poisson distribution : $ \frac{e^{b} \cdot b^{k}}{k!}$) $\times$ packet size (Exponential distribution : $\lambda \cdot e^{ \lambda \cdot t}$)
+	\begin{description}  
+    \item b = $\lambda \cdot$t
+    \item t is used to define the interval 0 to t   
+    \item $\lambda$ is the total average arrival rate in packets
+   	\item k is the total number of packets in the interval 0 to t
+   	\end{description}
+    \item Average packet delay = $\overline{x} = \dfrac{1}{n} \sum_{i=1}^{n} x_{i}$
+    \item Delay Variance = $ V(X) = \dfrac{1}{n} \sum_{i=1}^{n} x_{i}^{2} - \overline{x}$
+    	\begin{description}
+    	\item X : Delay
+    	\item n = number of packets
+    	\item $x_{i}$ = delay for packet number \begin{tiny}
+•
+\end{tiny}i
+    	\item $\overline{x}$ = average packet delay
+       	\end{description}
+    \item Thoughput = $\frac{number of byte sent}{total time}$
+\end{description}
+
+\subsection{The list of references}
+\begin{description}
+\item Chapter 2 of the textbook by Peterson and Davie
+\item The set of handout on simulation provided.
+\item \href{http://mathworld.wolfram.com/PoissonDistribution.html}{http://mathworld.wolfram.com/PoissonDistribution.html}
+\item \href{http://www.erg.abdn.ac.uk/~gorry/eg3561/lan-pages/csma-cd.html}{http://www.erg.abdn.ac.uk/~gorry/eg3561/lan-pages/csma-cd.html}
+\end{description}
 
