@@ -4,7 +4,7 @@
 function host() {
 	var _output; // Output function
 	var _c = 2.3 * Math.pow (10,8); // Light speed in copper 
-	var time = new Date().getTime();
+	var _stats = STS;
 
 	var _properties = {
 		sender: false, // Do we are sender or receiver?
@@ -34,6 +34,7 @@ function host() {
 		_frame.create(length, _properties.errorRate);
 		
 		_output('Frame #' + _frame.id() + ' sended' );
+		_stats.frameSended();
 		
 		if (Math.random() > _properties.frameLoss) {
 			_properties.receiver.receive(_frame);							
@@ -52,10 +53,9 @@ function host() {
 	 */
 	var _receive = function(frame) {
 		setTimeout(function () {
-			var time = new Date().getTime();
-			
-			var clz = (frame.crc() == frame.checkseq()) ? null : 'error';
-			_output('Received frame #' + frame.id (), clz);
+			var haveError = (frame.crc() == frame.checkseq()) ? null : 'error';
+			_output('Received frame #' + frame.id (), haveError);
+			_stats.frameReceived(haveError);
 		}, _delay());
 	};
 	

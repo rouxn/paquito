@@ -9,6 +9,7 @@
   <meta charset="utf-8">
   <title>Paquito | A packet-oriented network simulation</title>
   <meta content='width=device-width, initial-scale=1.0' name='viewport'>
+  <link rel="stylesheet" href="css/jquery.jqplot.min.css"/>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
   <script charset="utf-8" src="js/libs/modernizr.min.js" type="text/javascript"></script>
@@ -100,9 +101,11 @@
       
       <section role="region" class="outbox stats">
         <h3>Network statistics</h3>
-        <div>
-        
-        </div>
+          <div id="stats">
+            <span id="frameTransmited">0</span> frames transmitted, <span id="frameReceived">0</span> received, <span id="lossRate">0</span>% frame loss.<br />
+            <span id="numFrameError">0</span> frames received with errors, <span id="frameErrorRate">0</span>% transmission error. 
+          </div>
+          <div id="chart"></div>
       </section>
 
 

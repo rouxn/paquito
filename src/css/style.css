@@ -264,6 +264,16 @@ input.spinbox-active.spinbox-down {
     cursor:pointer;
 }
 
+#stats {
+	height: auto;
+	margin: 1em;
+    overflow: hidden;
+}
+
+#chart {
+    height: auto;
+}
+
 footer {
     clear: both;
     border: 1px solid #B3B3B3;

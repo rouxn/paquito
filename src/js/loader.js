@@ -18,7 +18,14 @@ Modernizr.load([{
 //    }
 //  }
 }, {
-  load: [JS_DIR + 'frame.js', JS_DIR + 'host.js', JS_LIBS_DIR + 'jquery.spinbox.js', JS_DIR + 'paquito.js' ],
+  load: [JS_LIBS_DIR + 'jquery.jqplot.min.js',
+         JS_LIBS_DIR + 'jqplot.canvasTextRenderer.min.js',
+         JS_LIBS_DIR + 'jqplot.canvasAxisLabelRenderer.min.js',
+         JS_LIBS_DIR + 'jquery.spinbox.min.js',
+         JS_DIR + 'stats.js',
+         JS_DIR + 'frame.js',
+         JS_DIR + 'host.js', 
+         JS_DIR + 'paquito.js' ],
   callback: function (url, result, key) {
 //    console.log(url + ' loaded');
   },
