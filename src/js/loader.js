@@ -18,10 +18,7 @@ Modernizr.load([{
 //    }
 //  }
 }, {
-  load: [JS_LIBS_DIR + 'jquery.jqplot.min.js',
-         JS_LIBS_DIR + 'jqplot.canvasTextRenderer.min.js',
-         JS_LIBS_DIR + 'jqplot.canvasAxisLabelRenderer.min.js',
-         JS_LIBS_DIR + 'jquery.spinbox.min.js',
+  load: [JS_LIBS_DIR + 'jquery.spinbox.min.js',
          JS_DIR + 'stats.js',
          JS_DIR + 'frame.js',
          JS_DIR + 'host.js', 
