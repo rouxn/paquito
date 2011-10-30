@@ -5,6 +5,7 @@ var STS = (function () {
 	var sended = 0;
 	var received = 0;
 	var error = 0;
+	var receivedFramePoints = [];
 
 	var _frameReceived = function (haveError) {
 		received++;
@@ -35,17 +36,33 @@ var STS = (function () {
 		$('#frameErrorRate').html(_roundDecimal((((1-(received-error)/received))*100) || 0));
 	};
 	
+	
 	var _reset = function () {
 		sended = 0;
 		received = 0;
 		error = 0;
-		
+		receivedFramePoints = [];
+
+		_transfertTimeChart();
 		_setStats();
+	};
+	
+	var _addReceivedFrame = function (frameId, elapsedTime) {
+		receivedFramePoints.push([frameId, elapsedTime]);
+		
+		_transfertTimeChart();
+	};
+	
+	var _transfertTimeChart = function () {
+		$.plot($('#chart'), [{ label: 'Transfert time',
+							  data: receivedFramePoints }]);
 	};
 	
 	return {
 		frameReceived: _frameReceived,
 		frameSended: _frameSended,
 		reset: _reset,
+		transfertTimeChart: _transfertTimeChart,
+		addReceivedFrame: _addReceivedFrame,
 	};
 })();
