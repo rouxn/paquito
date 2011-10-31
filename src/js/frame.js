@@ -75,9 +75,10 @@ function frame() {
 		_properties.payload = _generatePayload(length);
 		_properties.checkseq = _crc32();
 		_properties.id = _nextId();
-		_properties.created = new Date().getTime();
 		
 		_randomError(errorRate);
+
+		_properties.created = new Date().getTime();
 	};
 	
 	/**

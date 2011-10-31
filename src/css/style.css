@@ -172,10 +172,9 @@ section h3 {
 	padding: 0.5em 0 0.5em 1em;
 	font-weight: bold;	
 	color: white;
-	-webkit-background-clip: padding-box;
-    -moz-background-clip: padding;
-    background-clip: padding-box;
-    overflow: hidden;
+    -moz-border-top-radius: 8px;
+    -webkit-border-top-radius: 8px;
+    border-top-radius: 8px;
 }
 
 section.outbox h3 {
@@ -202,7 +201,7 @@ section.controls h3 {
 	background-image: linear-gradient(top,#555,#333);
 }
 
-section.outbox div {
+section.outbox .fixed-size {
 	overflow: auto;
 	height: 25em;
 }
@@ -267,11 +266,12 @@ input.spinbox-active.spinbox-down {
 #stats {
 	height: auto;
 	margin: 1em;
-    overflow: hidden;
 }
 
 #chart {
-    height: auto;
+	margin-top: 1em;
+    height: 20em;
+    width: 95%;
 }
 
 footer {

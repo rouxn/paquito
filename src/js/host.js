@@ -5,6 +5,8 @@ function host() {
 	var _output; // Output function
 	var _c = 2.3 * Math.pow (10,8); // Light speed in copper 
 	var _stats = STS;
+	var startSending = 0;
+	var lastSendingTime = 0;
 
 	var _properties = {
 		sender: false, // Do we are sender or receiver?
@@ -30,11 +32,25 @@ function host() {
 		
 		var length = frameLength || _properties.frameLength;
 		var _frame = frame();
+		var timeSinceFirstFrame;
 		
 		_frame.create(length, _properties.errorRate);
 		
-		_output('Frame #' + _frame.id() + ' sended' );
+
+		if (startSending == 0) {
+			startSending = new Date().getTime();
+			timeSinceFirstFrame = 0;
+		} else {
+			timeSinceFirstFrame = new Date().getTime() - startSending;
+		}
+
+
+		_output('Frame #' + _frame.id() + ' sended at ' + timeSinceFirstFrame + ' (' + (timeSinceFirstFrame - lastSendingTime) + ')');
+		
+		lastSendingTime = timeSinceFirstFrame;
+
 		_stats.frameSended();
+		
 		
 		if (Math.random() > _properties.frameLoss) {
 			_properties.receiver.receive(_frame);							
@@ -53,9 +69,16 @@ function host() {
 	 */
 	var _receive = function(frame) {
 		setTimeout(function () {
+			var receiveTime = new Date().getTime();
 			var haveError = (frame.crc() == frame.checkseq()) ? null : 'error';
-			_output('Received frame #' + frame.id (), haveError);
+			var elapsed = receiveTime - frame.created();
+			
+			_output('Received frame #' + frame.id() + ', elapsed ' + elapsed, haveError);
+			
+			_stats.addReceivedFrame(frame.id(), elapsed);
 			_stats.frameReceived(haveError);
+			
+			
 		}, _delay());
 	};
 	
@@ -76,6 +99,11 @@ function host() {
 		} else {
 			return _properties.reciever;
 		}
+	};
+	
+	var _reset = function () {
+		startSending = 0;
+		lastSendingTime = 0;
 	};
 	
 	var _frameLength = function (length) {
@@ -152,5 +180,6 @@ function host() {
 		isSender: _isSender,
 		bandwidth: _bandwidth,
 		receive: _receive,
+		reset: _reset,
 	};
 }

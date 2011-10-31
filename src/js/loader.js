@@ -19,6 +19,7 @@ Modernizr.load([{
 //  }
 }, {
   load: [JS_LIBS_DIR + 'jquery.spinbox.min.js',
+         JS_LIBS_DIR + 'jquery.flot.js',
          JS_DIR + 'stats.js',
          JS_DIR + 'frame.js',
          JS_DIR + 'host.js', 
