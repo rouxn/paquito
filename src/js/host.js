@@ -74,8 +74,8 @@ function host() {
 			var elapsed = receiveTime - frame.created();
 			
 			_output('Received frame #' + frame.id() + ', elapsed ' + elapsed, haveError);
-			
-			_stats.addReceivedFrame(frame.id(), elapsed);
+			_stats.addThroughputPoint(frame.payload().length, receiveTime, frame.created());
+			//_stats.addReceivedFrame(frame.id(), elapsed);
 			_stats.frameReceived(haveError);
 			
 			

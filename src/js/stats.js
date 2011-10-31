@@ -6,7 +6,9 @@ var STS = (function () {
 	var received = 0;
 	var error = 0;
 	var receivedFramePoints = [];
-
+	var receivedthroughputPoints = [];
+	var firstFrameTime = 0;
+	
 	var _frameReceived = function (haveError) {
 		received++;
 		
@@ -41,9 +43,11 @@ var STS = (function () {
 		sended = 0;
 		received = 0;
 		error = 0;
+		firstFrameTime = 0;
 		receivedFramePoints = [];
-
+		receivedthroughputPoints = [];
 		_transfertTimeChart();
+		_throughputChart;
 		_setStats();
 	};
 	
@@ -58,11 +62,26 @@ var STS = (function () {
 							  data: receivedFramePoints }]);
 	};
 	
+	var _addThroughputPoint = function (frameLength, elapsedTime, createdTime) {
+		if(firstFrameTime  == 0) {
+			firstFrameTime = createdTime;
+		}	
+		receivedthroughputPoints .push([elapsedTime-firstFrameTime,frameLength]);		
+		_throughputChart();
+	};
+
+	var _throughputChart = function () {
+		$.plot($('#chart'), [{ label: 'Throughput',
+							  data: receivedthroughputPoints }]);
+	};
+	
 	return {
 		frameReceived: _frameReceived,
 		frameSended: _frameSended,
 		reset: _reset,
 		transfertTimeChart: _transfertTimeChart,
 		addReceivedFrame: _addReceivedFrame,
+		addThroughputPoint: _addThroughputPoint,
+		throughputChart: _throughputChart,
 	};
 })();

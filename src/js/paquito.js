@@ -58,7 +58,7 @@ var PKT = function () {
 	var _setSpinboxes = function () {
 		$('#bandwidth').spinbox({
 			min: 1,
-			max: 1023,
+			max: 2000,
 			step: 10,
 		});
 		
