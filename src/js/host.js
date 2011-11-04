@@ -1,185 +1,116 @@
-/**
- * Send or receive frames. Simulate transmission time. 
- */
-function host() {
-	var _output; // Output function
+function Host(hostId, adaptor) {
 	var _c = 2.3 * Math.pow (10,8); // Light speed in copper 
-	var _stats = STS;
-	var startSending = 0;
-	var lastSendingTime = 0;
+	var _outbox = $('#host-'+hostId+' ul');
+	var bitRates = {
+			video: _nextVideoPacketInterval,
+			audio: _nextAudioPacketInterval,
+	}
 
 	var _properties = {
-		sender: false, // Do we are sender or receiver?
-		receiver: null, // Where do we send frame
-		frameLength: 1000, // Assign static frame length
-		distance: 2000, // Distance between sender and receiver
-		frameInterval: 10, // Interval between frames
-		frameLoss: 0.1, // Percents of lost frame in transmission
-		errorRate: 0.4, // Percents of error when sending a frame
-		bandwith:0, // Bandwidth between links in bits/s 
+		id: hostId,
+		adaptor: adaptor,
+		packetPayload: 0,
+		hostDistance: 0, // Consecutive host distance
+		packetInterval: 0,
+		errorRate: 0, // Percents of error when sending a packet
+		bandwith: 0, // Bandwidth between links in bits/s
+		dataSize: 0, // Size of the data to send
+		numPackets: 0, // Number of packets sent
+		receiver: 0,
+		distance: 0, // Distance to the current receiver
 	};
 	
 	/**
-	 * Send a frame to a the defined receiver
+	 * Send a packet to a the defined receiver
 	 * 
-	 * @param {Integer} frameLength
-	 * @param {Integer} numFrame
+	 * @param {Integer} packetLength
+	 * @param {Integer} numPacket
 	 */
-	var _send = function (frameLength, numFrame) {
-		if (numFrame < 1) {
-			return;
+	var _send = function () {
+		var lastSent = 0;
+		for (; _properties.numPackets > 0; _properties.numPackets--) {
+			var packet = Packet();
+		
+			packet.create(this, hosts[_properties.receiver], _properties.packetPayload, _properties.errorRate);
+			lastSent += _delay();
+			adaptor.push(packet, lastSent);
 		}
-		
-		var length = frameLength || _properties.frameLength;
-		var _frame = frame();
-		var timeSinceFirstFrame;
-		
-		_frame.create(length, _properties.errorRate);
-		
-
-		if (startSending == 0) {
-			startSending = new Date().getTime();
-			timeSinceFirstFrame = 0;
-		} else {
-			timeSinceFirstFrame = new Date().getTime() - startSending;
-		}
-
-
-		_output('Frame #' + _frame.id() + ' sended at ' + timeSinceFirstFrame + ' (' + (timeSinceFirstFrame - lastSendingTime) + ')');
-		
-		lastSendingTime = timeSinceFirstFrame;
-
-		_stats.frameSended();
-		
-		
-		if (Math.random() > _properties.frameLoss) {
-			_properties.receiver.receive(_frame);							
-		}
-		
-		setTimeout(function () {
-			_send(frameLength, numFrame-1);
-		}, _properties.frameInterval);
-		
 	};
 	
 	/**
-	 * Receive a frame from a sender
+	 * Receive a packet from a sender
 	 * 
-	 * @param frame Received frame
+	 * @param packet Received packet
 	 */
-	var _receive = function(frame) {
-		setTimeout(function () {
-			var receiveTime = new Date().getTime();
-			var haveError = (frame.crc() == frame.checkseq()) ? null : 'error';
-			var elapsed = receiveTime - frame.created();
-			
-			_output('Received frame #' + frame.id() + ', elapsed ' + elapsed, haveError);
-			_stats.addThroughputPoint(frame.payload().length, receiveTime, frame.created());
-			//_stats.addReceivedFrame(frame.id(), elapsed);
-			_stats.frameReceived(haveError);
-			
-			
-		}, _delay());
+	var _receive = function(packet) {
+		var haveError = (packet.crc() == packet.get('checkseq')) ? null : 'error';
+		
+		_output('Received packet #' + packet.get('id'), haveError);
 	};
 	
 	/**
-	 * Compute the delay to send a packet between hosts
+	 * Delay to send a packet between hosts
 	 * 
 	 * @returns {Integer}  Transmit delay
 	 */
 	var _delay = function (){
 		var propagationTime = _properties.distance / _c;
-		var transmitTime = _properties.frameLength / _properties.bandwith;
+		var transmitTime = _properties.packetLength / _properties.bandwith;
 		return propagationTime + transmitTime;
 	};
+	
+	var _nextVideoPacketInterval = function (packetId) {
+		return Math.ceil(1572864 / _properties.packetPayload);
+	};
+	
+	var _nextAudioPacketInterval = function (packetId) {
+		return Math.ceil(65536 / _properties.packetPayload);
+	};
+	
+	var _setAction = function (actionType, hostId) {
+		_properties.dataSize = Math.ceil(Math.random() *  5000);
+		_properties.numPackets = Math.ceil(_properties.dataSize / _properties.packetPayload);
+		_properties.receiver = hostId;
+		_properties.distance = Math.abs(_properties.id - hostId) * _properties.hostDistance;
+		
+		_output('Sending ' + actionType + ' of ' + _bytesToSize(_properties.dataSize) + '('+ _properties.numPackets +' packets) to host ' + (hostId+1));
+		
+		// Start sending packets
+		_send();
+	};
 
-	var _receiver = function (receiver) {
-		if (receiver != null) {
-			_properties.receiver = receiver;
-		} else {
-			return _properties.reciever;
-		}
+	var _bytesToSize = function (bytes) {
+	    var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+	    if (bytes == 0) return 'n/a';
+	    var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+	    return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
 	};
 	
-	var _reset = function () {
-		startSending = 0;
-		lastSendingTime = 0;
-	};
-	
-	var _frameLength = function (length) {
-		if (length != null) {
-			_properties.frameLength = length;
-		} else {
-			return _properties.frameLength;
-		}
-	};
-	
-	var _distance = function (length) {
-		if (length != null) {
-			_properties.distance = length;
-		} else {
-			return _properties.distance;
-		}
-	};
-	
-	var _frameInterval = function (interval) {
-		if (interval != null) {
-			_properties.frameInterval = interval;
-		} else {
-			return _properties.frameInterval;
-		}
-	};
-	
-	var _frameLoss = function (loss) {
-		if (loss != null) {
-			_properties.frameLoss = loss;
-		} else {
-			return _properties.frameLoss;
-		}
-	};
-	
-	var _errorRate = function (rate) {
-		if (rate != null) {
-			_properties.errorRate = rate;
-		} else {
-			return _properties.errorRate;
-		}
-	};
-	
-	var _isSender = function (sender) {
-		if (sender != null) {
-			_properties.sender = sender;
-		} else {
-			return _properties.sender;
-		}
+	var _set = function (propertyName, value) {
+		_properties[propertyName] = value;
 	}; 
 	
-	var _bandwidth = function (bandwidth){
-		if( bandwidth != null ) {
-			_properties.bandwith = bandwidth ;
-		}
-		else {
-			return _properties.bandwith ;
-		}
-		
+	var _get = function (propertyName) {
+		return _properties[propertyName];
 	};
 	
-	var _setOutput = function (output) {
-		_output = output;
+	var _output = function (message, status) {
+		var stat = status ? ' class="'+status+'"' : '';
+		_outbox.append('<li'+stat+'>'+message+'</li>');
+	};
+	
+	var _init = function (settings) {
+		for (attr in settings) {
+			_properties[attr] = settings[attr];
+		}		
 	};
 	
 	return {
-		output: _setOutput,
 		send: _send,
-		receiver: _receiver,
-		frameLength: _frameLength,
-		errorRate: _errorRate,
-		distance: _distance,
-		frameInterval: _frameInterval,
-		frameLoss: _frameLoss,
-		isSender: _isSender,
-		bandwidth: _bandwidth,
 		receive: _receive,
-		reset: _reset,
+		get: _get,
+		set: _set,
+		setAction: _setAction,
+		init: _init,
 	};
 }

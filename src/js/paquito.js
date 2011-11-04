@@ -1,95 +1,34 @@
-/**
- * Paquito network simulation
- * 
- * @version 0.1
- */
-var PKT = function () {
-	var _sender = host();
-	var _receiver = host();
-	var _stats = STS;
-	
-	var _settings = {
-		debug: true, // output debug info
-		debugMode: 'console', // debug output method ('console', 'html' or 'alert')
-	};
-	
-	
-	/**
-	 * @returns {Integer} Timestamp
-	 */
-	var _timestamp = function () {
-		return new Date().getTime();
-	};
-	
-	/**
-	 * Output Paquito debug information
-	 * @param {String} msg Message to print
-	 */
-	var _debug = function(msg) {
-		msg = 'Paquito: ' + msg;
-		if(_settings.debug)
-		{
-			switch(_settings.debugMode) {
-				case 'alert':
-					alert(msg);
-					break;
-				case 'console':
-					console.log(msg);
-					break;
-				case 'html':
-					$('body').append(msg+'<br />');
-					break;
-				default:
-					alert(msg);
-					break;
-			}
-		}
-	};
-	
-	var _senderOut = function (msg) {
-		$('#sender').append('<li>' + msg + '</li>');
-	};
-	
-	var _receiverOut = function (msg, status) {
-		var stat = status ? ' class="'+status+'"' : '';
-		$('#receiver').append('<li'+stat+'>' + msg + '</li>');
-	};
+var currentTime = 0;
+var hosts = [];
+
+var Paquito = function () {
+	var packets = PriorityQueue({low: true});
+	var started = false;
+	var baseHost = $('#host-1');
 	
 	var _setSpinboxes = function () {
+		$('#numHost').spinbox({
+			min: 2,
+			max: 1024,
+			step: 2,
+		});
+		
 		$('#bandwidth').spinbox({
 			min: 1,
-			max: 2000,
+			max: 9999,
 			step: 10,
 		});
 		
-		$('#distance').spinbox({
+		$('#hostDistance').spinbox({
 			min: 1,
 			max: 2500,
 			step: 100,
 		});
 		
-		$('#framePayload').spinbox({
+		$('#packetPayload').spinbox({
 			min: 100,
 			max: 1500,
 			step: 100,
-		});
-		
-		$('#numFrame').spinbox({
-			min: 1,
-			max: 1000,
-			step: 2,
-		});
-		
-		$('#frameInterval').spinbox({
-			min: 1,
-			max: 1000,
-			step: 20,
-		});
-		
-		$('#frameLoss').spinbox({
-			min: 1,
-			max: 100,
-			step: 5,
 		});
 		
 		$('#errorRate').spinbox({
@@ -99,59 +38,90 @@ var PKT = function () {
 		});
 	};
 	
-	var _setSimulationProperties = function () {
-		_sender.errorRate($('#errorRate'). val() / 100);
-		_sender.frameLength($('#framePayload').val());
-		_sender.frameInterval($('#frameInterval').val());
-		_sender.frameLoss($('#frameLoss').val() / 100);
+	var _createHostOutputBox = function (hostId) {
+		var newHost = $('#host-'+hostId);
 		
-		_receiver.distance($('#distance').val());
-		_receiver.bandwidth($('#bandwidth').val() * $('#bandwidthUnit').val());
+		if (newHost.length == 0) {
+			newHost = baseHost.clone();
+			newHost.attr('id', 'host-'+hostId);
+			newHost.find('.host-no').text(hostId);
+			
+			$('article').append(newHost);
+		}
 		
-		_sender.send(null, $('#numFrame').val());
+	};
+	
+	var _deleteHostOutputBox = function (hostId) {
+		var host = $('#host-'+hostId);
+		
+		host.fadeOut('slow').remove();
+	};
+	
+	var _setupSimulation = function () {
+		for (var hostId=1; hostId <= $('#numHost').val(); hostId++) {
+			_createHostOutputBox(hostId);
+			var host = Host(hostId, packets);
+
+			hosts.push(host);
+			host.init({
+				adaptor: packets,
+				packetPayload: $('#packetPayload').val(),
+				hostDistance: $('#hostDistance').val(),
+				errorRate: $('#errorRate').val() / 100,
+				bandwith: $('#bandwidth').val() * $('#bandwidthUnit').val(),
+			});
+			
+		}
+		
+		_setHostsActions();
+	};
+	
+	var _setHostsActions = function () {
+		var actions = ['video', 'audio', 'data'];
+		
+		for (var hostId=0; hostId < hosts.length; hostId++) {
+			var randomAction = actions[Math.floor(Math.random() * actions.length)];
+			
+			var randomHost = hostId;
+			while (randomHost == hostId) {
+				randomHost = Math.floor(Math.random() * hosts.length);
+			}
+			
+			hosts[hostId].setAction(randomAction, randomHost);
+		}
 	};
 	
 	var _resetSimulation = function () {
-		frameId = 0;
-		$('#sender').html('');
-		$('#receiver').html('');
-		_stats.reset();
-		_sender.reset();
-	};
-	
-	/**
-	 * Initialize Paquito
-	 * @param {Object} settings
-	 */
-	var _init = function(settings) {
-		for(attr in settings) {
-			_settings[attr] = settings[attr];
+		for (var i=1; i < hosts.length; i++) {
+			_deleteHostOutputBox(i+1);
 		}
-		
-		_setSpinboxes();
-		
-		_sender.output(_senderOut);
-		_sender.isSender(true);
-		_sender.receiver(_receiver);
-		
-		_receiver.output(_receiverOut);
-		_receiver.receiver(_sender);
-
-		$('#launch').click(function () {
-			_setSimulationProperties();
-			return false;
-		});
-		
-		$('#clear').click(function () {
-			_resetSimulation();
-			return false;
-		});
-		
-		_stats.transfertTimeChart();
 	};
 	
-	// expose public properties and methods
+	var _init = function() {
+			_setSpinboxes();
+	
+			$('#startSimulation').click(function () {
+				if (!started) {
+					$('#startSimulation').addClass('disabled');
+					_setupSimulation();
+					started = true;
+					_manageEvents();
+				}
+				
+				return false;
+			});
+	};
+	
+	var _manageEvents = function () {
+		while (!packets.empty()) {
+			var currentPacket = packets.pop();
+			
+			currentPacket.get('destination').receive(currentPacket);
+		}
+	};
+	
 	return {
 		init: _init,
 	};
+	
 }();

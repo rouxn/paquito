@@ -24,11 +24,15 @@
 
     <article role="article">
     
-      <section role="region" class="controls">
+      <section role="region"  id="parameters" class="controls">
         <h3>Simulation controls</h3>
         
-        <form id="controls" action="#" method="post">
-          <div class="box">
+        <form action="#" method="post">
+          <p>
+            <label for="numHost">Host number</label>
+            <input type="text" name="numHost" id="numHost" value="4" />
+          </p>
+        
           <p>
             <label for="bandwidth">Bandwidth</label>
             <input type="text" name="bandwidth" id="bandwidth" value="56">
@@ -41,74 +45,53 @@
           </p>
           
           <p>
-            <label for="frameLoss">Frame loss (%)</label>
-            <input type="text" name="frameLoss" id="frameLoss" value="1" />
+            <label for="errorRate">Error rate</label>
+            <input type="text" name="errorRate" id="errorRate" value="10" /> %
+          </p>
+
+          <p>
+            <label for="hostDistance">Consecutive host distance</label>
+            <input type="text" name="hostDistance" id="hostDistance" value="150" /> meters
           </p>
           
           <p>
-            <label for="errorRate">Error rate (%)</label>
-            <input type="text" name="errorRate" id="errorRate" value="10" />
+            <label for="packetPayload">Packet payload</label>
+            <input type="text" name="packetPayload" id="packetPayload" value="1000" /> bits
           </p>
-          </div>
-          
-          <div class="box">
-          <p>
-            <label for="distance">Host distance (meters)</label>
-            <input type="text" name="distance" id="distance" value="2000" />
-          </p>
-          
-          <p>
-            <label for="framePayload">Frame payload length (bits)</label>
-            <input type="text" name="framePayload" id="framePayload" value="1000" />
-          </p>
-          
-          <p>
-            <label for="numFrame">Number of frame</label>
-            <input type="text" name="numFrame" id="numFrame" value="10" />            
-          </p>
-          
-          <p>
-            <label for="frameInterval">Frame sending interval (ms)</label>
-            <input type="text" name="frameInterval" id="frameInterval" value="40" />
-          </p>
-          </div>
             
-          <hr class="hide" />
           <p>   
-            <input type="submit" name="launch" value="Launch simulation" id="launch" />
-            <input type="submit" name="clear" value="Clear" id="clear" />
+            <input type="submit" name="startSimulation" value="Launch simulation" id="startSimulation" />
           </p>
         </form>
       </section>
-
-      <section role="region" class="outbox">
-        <h3>Sender informations</h3>
-        
-        <div class="fixed-size">
-        <ul id="sender">
-        </ul>
-        </div>
-      </section>
-
-      <section role="region" class="outbox">
-        <h3>Receiver informations</h3>
-        <div class="fixed-size">
-        <ul id="receiver">
-        </ul>
-        </div>
-      </section>
       
-      <section role="region" class="outbox stats">
-        <h3>Network statistics</h3>
-          <div id="stats">
-            <span id="frameTransmited">0</span> frames transmitted, <span id="frameReceived">0</span> received, <span id="lossRate">0</span>% frame loss.<br />
-            <span id="numFrameError">0</span> frames received with errors, <span id="frameErrorRate">0</span>% transmission error. 
-            
-            <p id="chart"></p>
+      <section role="region" id="charts"  class="controls">
+        <h3>Network informations</h3>
+          <div class="tabs">
+            <ul>
+              <li><a href="#stats">Statistics</a></li>
+              <li><a href="#throughput-chat">Throughput</a></li>
+            </ul>
+            <div id="stats">
+              <span id="frameTransmited">0</span> frames transmitted, <span id="frameReceived">0</span> received, <span id="lossRate">0</span>% frame loss.<br />
+              <span id="numFrameError">0</span> frames received with errors, <span id="frameErrorRate">0</span>% transmission error. 
+            </div>
+            <div id="throughput-chat"></div>
           </div>
       </section>
 
+      <hr class="clear" />     
 
+      <section role="region" class="outbox" id="host-1">
+        <h3>Host <span class="host-no">1</span></h3>
+        
+        <div class="host-output">
+        <ul>
+        </ul>
+        </div>
+      </section>
+
+      
 
     </article>
     

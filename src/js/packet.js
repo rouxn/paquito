@@ -1,14 +1,9 @@
-/**
- * Initialize frame, create content, compute verifications and create error.
- */
-var frameId = 0;
+var packetId = 0;
 
-function frame() {
+function Packet() {
 	String.prototype.replaceAt=function(index, char) {
 	      return this.substr(0, index) + char + this.substr(index+char.length);
 	};
-	
-	var _maxPayloadLength = 1500; // TODO: Check if needed in futurr
 	
 	var _crc32poly = 	'00000000 77073096 EE0E612C 990951BA 076DC419 706AF48F ' + 
 						'E963A535 9E6495A3 0EDB8832 79DCB8A4 E0D5E91E 97D2D988 ' +
@@ -55,37 +50,38 @@ function frame() {
 						'B40BBE37 C30C8EA1 5A05DF1B 2D02EF8D';
 	
 	/**
-	 * Properties of the current frame
+	 * Properties of the current packet
 	 */
 	var _properties = {
-		payload: '', // Content of the frame
+		payload: '', // Content of the packet
 		checkseq: '', // Check sequence computed before sending
 		id: 0,
-		created: 0, // Timestamp frame creation
+		source: null,
+		destination: null,
 	};
 	
 	/**
-	 * Create a frame with content and compute check sequence.
+	 * Create a packet with content and compute check sequence.
 	 * Randomly add error depending on error rate.
 	 * 
-	 * @param {Integer} length Length of the resulting frame
+	 * @param {Integer} length Length of the resulting packet
 	 * @param {Float} errorRate Between 0 and 1
 	 */
-	var _create = function (length, errorRate) {
+	var _create = function (source, destination, length, errorRate) {
+		_properties.source = source;
+		_properties.destination = destination;
 		_properties.payload = _generatePayload(length);
 		_properties.checkseq = _crc32();
 		_properties.id = _nextId();
 		
 		_randomError(errorRate);
-
-		_properties.created = new Date().getTime();
 	};
 	
 	/**
-	 * @returns {Integer} Next frame ID
+	 * @returns {Integer} Next packet ID
 	 */
 	var _nextId = function () {
-		return (frameId++);
+		return (packetId++);
 	};
 	
 	/**
@@ -109,7 +105,7 @@ function frame() {
 	};
 	
 	/**
-	 * Randomly add error to frame
+	 * Randomly add error to packet
 	 * 
 	 * @param {Float} errorRate
 	 */
@@ -156,7 +152,7 @@ function frame() {
 	/**
 	 * Compute CRC32 on payload
 	 * 
-	 * @param {String} crc Optional start sequence to concatenate frame CRC
+	 * @param {String} crc Optional start sequence to concatenate packet CRC
 	 * 
 	 *  e.g: _crc32('Hello World!') == _crc32('World!', _crc32('Hello '))
 	 */
@@ -180,49 +176,18 @@ function frame() {
 		return crc ^ (-1);
 	};
 	
-	/**
-	 * Set of return payload.
-	 * 
-	 * @param {String} content
-	 */
-	var _payload = function (content) {
-		if (content != null) {
-			_properties.payload = content;
-		} else {
-			return _properties.payload;
-		}
-	};
+	var _set = function (propertyName, value) {
+		_properties[propertyName] = value;
+	}; 
 	
-	/**
-	 * @Rreturn {String} frame check sequence
-	 */
-	var _checkseq = function () {
-		return _properties.checkseq;
-	};
-	
-	/**
-	 * Set or return frame identifier
-	 * 
-	 * @param {Integer} id
-	 */
-	var _frameId = function (id) {
-		if (id != null) {
-			_properties.id = id;
-		} else {
-			return _properties.id;
-		}
-	};
-	
-	var _created = function () {
-		return _properties.created;
+	var _get = function (propertyName) {
+		return _properties[propertyName];
 	};
 	
 	return {
-		payload: _payload,
-		checkseq: _checkseq,
 		crc: _crc32,
 		create: _create,
-		id: _frameId,
-		created: _created,
+		get: _get,
+		set: _set,
 	};
 }

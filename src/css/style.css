@@ -38,17 +38,13 @@ q:before, q:after {
 	content: '';
 	content: none;
 }
-table {
-	border-collapse: collapse;
-	border-spacing: 0;
-}
 
 html {
 	font: 80%/2em Helvetica,Arial,sans-serif;
 	background: #f9f9f9;
 }
 
-.hide {
+hr.clear {
     display: block;
     border: 0; 
     clear: both; 
@@ -56,6 +52,8 @@ html {
     padding: 0; 
     visibility: hidden;
 }
+
+/* Header */
 
 header {
 	color: white;
@@ -90,6 +88,8 @@ article {
 	margin: 1% auto;
 }
 
+/* Section */
+
 section {
     overflow: auto;
 	border-radius: 8px;
@@ -98,50 +98,33 @@ section {
     -moz-box-shadow: 0 1px 4px rgba(0,0,0,.3);
     -webkit-box-shadow: 0 1px 4px rgba(0,0,0,.3);
 	box-shadow: 0 1px 4px rgba(0,0,0,.3);
-	margin: 1%;
+	margin: 0.9%;
 	border: 1px solid #ccc;
 }
 
-section.outbox {
-	width: 20%;
-	float: left;
-}
+/* Section > forms */
 
-section.stats {
-	width: 53%;
-}
-
-section.controls {
-	margin-bottom: 0;
-	width: 97.2%;
-}
-
-#controls {
-    padding: 1em;
-}
-
-#controls .box {
-	float: left;
-	width: 28em;
-}
-
-#controls .box label {
+section label {
 	float: left;
 	display: block;
 	width: 15em;
 	line-height: 2em;
 }
 
-#controls .box input {
+section form {
+	margin: 1em;
+}
+
+section form p {
+    clear: both;
+}
+
+section input {
 	border: 1px solid #ccc;
 	font-size: 100%;
 }
 
-#controls .box p {
-    clear: both;
-}
-
-#controls input[type=submit] {
+section input[type=submit] {
 	border: 1px solid #BBB;
 	background: #DADADA;
 	font-weight: bold;
@@ -167,6 +150,13 @@ section.controls {
     padding: .8em 2em;
 }
 
+section form .disabled {
+    color: #bebebe;
+}
+
+
+/* Section > Title */
+
 section h3 {
 	font-size: 120%;
 	padding: 0.5em 0 0.5em 1em;
@@ -177,20 +167,13 @@ section h3 {
     border-top-radius: 8px;
 }
 
-section.outbox h3 {
-/* 	border: 1px solid #456F9A; */
-	background: #5E87B0;
-	text-shadow: 0 -1px 1px #254F7A;
-	background-image: -webkit-gradient(linear,left top,left bottom,from(#81a8ce),to(#5e87b0));
-	background-image: -webkit-linear-gradient(top,#81a8ce,#5e87b0);
-	background-image: -moz-linear-gradient(top,#81a8ce,#5e87b0);
-	background-image: -ms-linear-gradient(top,#81a8ce,#5e87b0);
-	background-image: -o-linear-gradient(top,#81a8ce,#5e87b0);
-	background-image: linear-gradient(top,#81a8ce,#5e87b0);
+/* Section > controls */
+
+section.controls {
+	float: left;
 }
 
 section.controls h3 {
-/* 	border: 1px solid #222; */
 	background: #333;
 	text-shadow: 0 -1px 1px black;
 	background-image: -webkit-gradient(linear,left top,left bottom,from(#555),to(#333));
@@ -201,14 +184,31 @@ section.controls h3 {
 	background-image: linear-gradient(top,#555,#333);
 }
 
-section.outbox .fixed-size {
-	overflow: auto;
-	height: 25em;
+/* Section > Outbox */
+
+section.outbox {
+	width: 23%;
+	float: left;
 }
 
-section li {
+section.outbox h3 {
+    background: #5E87B0;
+    text-shadow: 0 -1px 1px #254F7A;
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#81a8ce),to(#5e87b0));
+    background-image: -webkit-linear-gradient(top,#81a8ce,#5e87b0);
+    background-image: -moz-linear-gradient(top,#81a8ce,#5e87b0);
+    background-image: -ms-linear-gradient(top,#81a8ce,#5e87b0);
+    background-image: -o-linear-gradient(top,#81a8ce,#5e87b0);
+    background-image: linear-gradient(top,#81a8ce,#5e87b0);
+}
+
+section .host-output {
+	overflow: auto;
+	height: 20em;
+}
+
+section .host-output li {
 	border-bottom: 1px solid #ccc;
-	background: #f5f5f5;
 /* 	font-weight: bold; */
 	color: #101010;
 	text-shadow: 0 1px 1px white;
