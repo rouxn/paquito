@@ -1,0 +1,33 @@
+\section{Asynchronous traffic}
+
+TODO: Introduce asynchronous traffic.
+
+\begin{description}
+    \item Arrival process : $ \frac{e^{b} \cdot b^{k}}{k!}$ (Poisson distribution)
+    \item Traffic load = packet arrival time rate  (Poisson distribution : $ \frac{e^{b} \cdot b^{k}}{k!}$) $\times$ packet size (Exponential distribution : $\lambda \cdot e^{ \lambda \cdot t}$)
+
+	\begin{description}  
+        \item b = $\lambda \cdot$t
+        \item t is used to define the interval 0 to t   
+        \item $\lambda$ is the total average arrival rate in packets
+        \item k is the total number of packets in the interval 0 to t
+   	\end{description}
+
+    \item Average packet delay = $\overline{x} = \dfrac{1}{n} \sum_{i=1}^{n} x_{i}$
+    \item Delay Variance = $ V(X) = \dfrac{1}{n} \sum_{i=1}^{n} x_{i}^{2} - \overline{x}$
+
+    	\begin{description}
+            \item X : Delay
+            \item n = number of packets
+            \item $x_{i} = delay for packet number \times i$
+            \item $\overline{x} = average packet delay$
+       	\end{description}
+
+    \item Thoughput = $\frac{number of byte sent}{total time}$
+\end{description}
+
+\subsection{Poisson process}
+
+TODO: Expose concept and implementation
+
+
