@@ -20,10 +20,10 @@ Modernizr.load([{
 }, {
   load: [JS_LIBS_DIR + 'jquery.spinbox.min.js',
          JS_LIBS_DIR + 'jquery.flot.js',
-         JS_LIBS_DIR + 'priority-queue.js',
          JS_DIR + 'stats.js',
          JS_DIR + 'packet.js',
          JS_DIR + 'host.js', 
+         JS_DIR + 'link.js',
          JS_DIR + 'paquito.js' ],
   callback: function (url, result, key) {
 //    console.log(url + ' loaded');

@@ -62,21 +62,33 @@
           <p>   
             <input type="submit" name="startSimulation" value="Launch simulation" id="startSimulation" />
           </p>
+          
+        
         </form>
+        
+        <div id="filters">
+          <h3>Output filters</h3>
+          <p>
+            <input type="checkbox" name="error" value="error" checked="checked" />Show error<br />
+            <input type="checkbox" name="notice" value="notice" checked="checked" />Show notice<br />
+            <input type="checkbox" name="info" value="info" checked="checked" />Show info<br />
+            <input type="checkbox" name="success" value="success" checked="checked" />Show success<br />
+          </p>
+        </div>
       </section>
       
       <section role="region" id="charts"  class="controls">
         <h3>Network informations</h3>
           <div class="tabs">
-            <ul>
-              <li><a href="#stats">Statistics</a></li>
-              <li><a href="#throughput-chat">Throughput</a></li>
-            </ul>
-            <div id="stats">
+            <div id="stats" class="first">
               <span id="frameTransmited">0</span> frames transmitted, <span id="frameReceived">0</span> received, <span id="lossRate">0</span>% frame loss.<br />
               <span id="numFrameError">0</span> frames received with errors, <span id="frameErrorRate">0</span>% transmission error. 
             </div>
-            <div id="throughput-chat"></div>
+            <div id="throughput-chart">Hello</div>
+            <ul class="tabNavigation">
+              <li><a href="#stats">Statistics</a></li>
+              <li><a href="#throughput-chart">Throughput</a></li>
+            </ul>
           </div>
       </section>
 

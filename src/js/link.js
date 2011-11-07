@@ -1,37 +1,17 @@
 (function() {
-  /**
-   * @private
-   */
-  var prioritySortLow = function(a, b) {
-    return b.priority - a.priority;
-  };
 
-  /**
-   * @private
-   */
-  var prioritySortHigh = function(a, b) {
-    return a.priority - b.priority;
-  };
-
-  /*global PriorityQueue */
+  /*global Link */
   /**
    * @constructor
-   * @class PriorityQueue manages a queue of elements with priorities. Default
-   * is highest priority first.
-   *
-   * @param [options] If low is set to true returns lowest first.
+   * @class Link manages a queue of elements with priorities.
    */
-  PriorityQueue = function(options) {
+  Link = function() {
     var contents = [];
-
+    var hosts = []; // Hosts connected to the link
     var sorted = false;
-    var sortStyle;
-
-    if(options && options.low) {
-      sortStyle = prioritySortLow;
-    } else {
-      sortStyle = prioritySortHigh;
-    }
+    var sortStyle = function(a, b) {
+        return b.priority - a.priority;
+    };
 
     /**
      * @private
@@ -40,11 +20,20 @@
       contents.sort(sortStyle);
       sorted = true;
     };
+    
+    /**
+     * @private
+     */
+    var setLinkIdle = function (idle) {
+    	for (var hostId=0; hostId < hosts.length; hostId++) {
+        	hosts[hostId].set('linkIdle', idle);
+        }
+    };
 
     var self = {
       /**
        * Removes and returns the next element in the queue.
-       * @member PriorityQueue
+       * @member Link
        * @return The next element in the queue. If the queue is empty returns
        * undefined.
        *
@@ -58,6 +47,7 @@
         var element = contents.pop();
 
         if(element) {
+          setLinkIdle(true);
           return element.object;
         } else {
           return undefined;
@@ -66,11 +56,11 @@
 
       /**
        * Returns but does not remove the next element in the queue.
-       * @member PriorityQueue
+       * @member Link
        * @return The next element in the queue. If the queue is empty returns
        * undefined.
        *
-       * @see PriorityQueue#pop
+       * @see Link#pop
        */
       top: function() {
         if(!sorted) {
@@ -85,9 +75,29 @@
           return undefined;
         }
       },
+      
+      /**
+       * Returns priority of the next element in the queue.
+       * @member Link
+       * @return The next element priority in the queue. If the queue is empty returns
+       * undefined.
+       */
+      topPriority: function () {
+		    if(!sorted) {
+	          sort();
+	        }
+	
+	        var element = contents[contents.length - 1];
+	
+	        if(element) {
+	          return element.priority;
+	        } else {
+	          return undefined;
+	        }
+	  },
 
       /**
-       * @member PriorityQueue
+       * @member Link
        * @param object The object to check the queue for.
        * @returns true if the object is in the queue, false otherwise.
        */
@@ -102,7 +112,7 @@
       },
 
       /**
-       * @member PriorityQueue
+       * @member Link
        * @returns the current number of elements in the queue.
        */
       size: function() {
@@ -110,7 +120,7 @@
       },
 
       /**
-       * @member PriorityQueue
+       * @member Link
        * @returns true if the queue is empty, false otherwise.
        */
       empty: function() {
@@ -118,13 +128,22 @@
       },
 
       /**
-       * @member PriorityQueue
+       * @member Link
        * @param object The object to be pushed onto the queue.
        * @param priority The priority of the object.
        */
       push: function(object, priority) {
         contents.push({object: object, priority: priority});
         sorted = false;
+        setLinkIdle(false);
+      },
+      
+      /**
+       * @member Link
+       * @param object Host list connected to link
+       */
+      connectHosts: function(newHosts) {
+    	 hosts = newHosts;
       }
     };
 

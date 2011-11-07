@@ -1,10 +1,12 @@
-var currentTime = 0;
-var hosts = [];
 
 var Paquito = function () {
-	var packets = PriorityQueue({low: true});
+	var link = Link();
 	var started = false;
 	var baseHost = $('#host-1');
+	var currentTime = 0;
+	var hosts = [];
+	var MAX_UNUSED_BEAT = 50; // Number of heartbeat unused before stoping
+	var unusedBeats = 0;
 	
 	var _setSpinboxes = function () {
 		$('#numHost').spinbox({
@@ -51,20 +53,32 @@ var Paquito = function () {
 		
 	};
 	
-	var _deleteHostOutputBox = function (hostId) {
-		var host = $('#host-'+hostId);
+	var _manageTabs = function () {
+		var tabContainers = $('div.tabs > div');
 		
-		host.fadeOut('slow').remove();
+		$('div.tabs ul.tabNavigation a').click(function () {
+			tabContainers.hide();
+			tabContainers.filter(this.hash).show();
+			$('div.tabs ul.tabNavigation a').removeClass('selected');
+			$(this).addClass('selected');
+			return false;
+		}).filter(':first').click();
+	};
+	
+	var _filterOutput = function () {
+		$('#parameters input[type=checkbox]').click(function () {
+				$('.outbox li.'+$(this).val()).toggle();
+		});
 	};
 	
 	var _setupSimulation = function () {
 		for (var hostId=1; hostId <= $('#numHost').val(); hostId++) {
 			_createHostOutputBox(hostId);
-			var host = Host(hostId, packets);
+			var host = Host(hostId, link);
 
 			hosts.push(host);
 			host.init({
-				adaptor: packets,
+				link: link,
 				packetPayload: $('#packetPayload').val(),
 				hostDistance: $('#hostDistance').val(),
 				errorRate: $('#errorRate').val() / 100,
@@ -74,6 +88,7 @@ var Paquito = function () {
 		}
 		
 		_setHostsActions();
+		link.connectHosts(hosts);
 	};
 	
 	var _setHostsActions = function () {
@@ -87,13 +102,8 @@ var Paquito = function () {
 				randomHost = Math.floor(Math.random() * hosts.length);
 			}
 			
+			hosts[hostId].set('hosts', hosts);
 			hosts[hostId].setAction(randomAction, randomHost);
-		}
-	};
-	
-	var _resetSimulation = function () {
-		for (var i=1; i < hosts.length; i++) {
-			_deleteHostOutputBox(i+1);
 		}
 	};
 	
@@ -110,13 +120,46 @@ var Paquito = function () {
 				
 				return false;
 			});
+			
+			_manageTabs();
+			_filterOutput();
+	};
+	
+	var _shuffleHosts = function () {
+		var newHosts = [];
+		for (var i=0; i < hosts.length; i++) {
+			newHosts[i] = hosts[i];
+		}
+		
+		newHosts.sort(function() { 
+			return Math.random() - 0.5;
+		});
+		
+		return newHosts;
+	};
+	
+	var _beat = function () {
+		// Shuffle hosts to avoid first hosts to be the firsts sending
+		var shuffledHosts = _shuffleHosts(); 
+		
+		for (var i=0; i < shuffledHosts.length; i++) {
+			shuffledHosts[i].heartbeat(currentTime);
+		}
 	};
 	
 	var _manageEvents = function () {
-		while (!packets.empty()) {
-			var currentPacket = packets.pop();
+		while (unusedBeats <= MAX_UNUSED_BEAT) {
+			currentTime += 0.0001;
+			_beat();
 			
-			currentPacket.get('destination').receive(currentPacket);
+			if (link.topPriority() <= currentTime) {
+				var currentPacket = link.pop();
+				currentPacket.get('destination').receive(currentPacket);
+				unusedBeats = 0;
+			} else {
+				unusedBeats++;
+			}
+			
 		}
 	};
 	
