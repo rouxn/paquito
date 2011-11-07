@@ -28,6 +28,8 @@ TODO: Introduce asynchronous traffic.
 
 \subsection{Poisson process}
 
-TODO: Expose concept and implementation
+Contrary to the synchronous traffic, in the asynchronous traffic the number of packet received vary with time. 
+
+In the case of asynchronous traffic, the reception of the packet is directed dictated by the poisson process  $ \frac{e^{\lambda} \cdot \lambda^{k}}{k!}$ . The number of packet we will receive depends on the number of packet we had already received. Let k represent the number of packet we want to send. At $ t=0 $, we have send and receive 0 packets. So if we decide to send at that moment, the number of packet received will be given by P(0). Consider $ P(0)=p $, with $ 0 < p < 1 $ and p is round at the higher figure. So at the first emission we only receive p\% packet. The total number of packet received will be $ k*p $. So we still must send $ (1-p)*k $ packets. At the second emission we will receive, according the same principle, P(p) packets, with $ 0 < P(p) < p $. Now the receiver has become $ (p+P(p))*k $ packets. He still needs $ (1-p+P(p)))*k $ packets. More the time passed, more the number of packet send decrease until we got a number near 0. In that case, we have sent all the packet.
 
 
