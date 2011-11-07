@@ -1,0 +1,39 @@
+\section{Ethernet protocols}
+
+Ethernet protocols refer to a family of computer networking technologies
+used in Local Area Network. Developed by Xerox in 1973, it have been
+commercially introduced in 1980. Since its release, it has retained a
+good degree of compatibility.
+
+With the time, Ethernet has been standardized in IEEE 802.3 and has
+replaced most of the other wired LAN technologies. Some of this features
+such as 48-bit MAC address and Ethernet frame format have influenced
+other networking protocols.
+
+The Ethernet system consists of three basic elements:
+
+\begin{enumerate}
+    \item The physical medium used to carry Ethernet signal between
+    computers.
+    \item A set of medium access control rules embedded in each Ethernet
+    interface that allow multiple computers to fairly arbitrate access
+    to the shared Ethernet channel
+    \item An  Ethernet frame that consists of a standardized set of bits
+    used to carry data over the system.
+\end{enumerate}
+
+Each host that is using Ethernet operates independently of all other
+station on the network, there is no central controller. All hosts are
+connected the same link (the medium). Therefor before sending data
+on this link, they need to listen the channel to make sure nobody else
+is using it. The medium access control mechanism used by Ethernet use a
+system called Carrier Sense Multiple Access with Collision Detection
+(CSMA/CD).
+
+As Ethernet is a widely used standard and it design robustness has been
+proved and influenced many other protocols, it appear to be very
+interesting to study this subject and to try to simulate this protocol.
+We will moreover do some performance evaluation on the Ethernet
+protocols to measure and compare some parameters like delay, delay
+jitter and throughput.
+
