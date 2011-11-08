@@ -1,0 +1,34 @@
+\section{Design concepts}
+
+``... with proper design, the features come cheaply. This approach is
+arduous, but continues to succeed.''
+\begin{flushright}
+\emph{Dennis Ritchie}, C and Unix inventor
+\end{flushright}
+
+\huge{This is a draft of the design concepts}
+
+Objects:
+
+\begin{description}
+    \item[Paquito] orchestrator
+    \item[Packet] packet representation
+    \item[Host] host representation
+    \item[Link] link representation
+\end{description}
+
+Hosts try to send until it have packet to send.
+Hosts notify link that there are sensing. Then when sensing time is elapsed,
+orchestrator will call the send method. If the boolean saying that the
+link is idle have not been set to false the packet is sent.
+If the link was not idle, a new sense request is sent to the link and so
+on.
+Every time a host is sending a packet, for each host on the link between
+sender and receiver, the link will be set to in use when the signal is
+under the adaptor and reset to idle when the packet is transmitted.
+If a host try to send a packet will another one is sending a jam signal
+is sent to all the host and all the packet, traffic notification and
+sensing are discarded. Host will wait a random time between 0 and 2 pow
+K with K incrementing by one each consecutive jam signal until 15. When a
+host successfully send a packet, K is reset to 0.
+
