@@ -58,21 +58,25 @@ function Packet() {
 		id: 0,
 		source: null,
 		destination: null,
+		type: 'data', // Can be data or notice
 	};
 	
 	/**
 	 * Create a packet with content and compute check sequence.
 	 * Randomly add error depending on error rate.
 	 * 
-	 * @param {Integer} length Length of the resulting packet
+	 * @param {Object} source
+	 * @param {Object} destination
+	 * @param {Integer} length Length of the resulting packet payload
 	 * @param {Float} errorRate Between 0 and 1
+	 * @param {Integer} packetId
 	 */
-	var _create = function (source, destination, length, errorRate) {
+	var _create = function (source, destination, length, errorRate, packetId) {
 		_properties.source = source;
 		_properties.destination = destination;
 		_properties.payload = _generatePayload(length);
 		_properties.checkseq = _crc32();
-		_properties.id = _nextId();
+		_properties.id = packetId || _nextId();
 		
 		_randomError(errorRate);
 	};

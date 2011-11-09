@@ -309,6 +309,7 @@ input.spinbox-active.spinbox-down {
 
 #charts {
     width: 72%;
+    overflow: hidden;
 }
 
 /* Tabs */
@@ -340,7 +341,7 @@ input.spinbox-active.spinbox-down {
 }
 
 .tabs div {
-	height: 21.7em;
+	height: 23.6em;
 	display: none;
 	padding: 1em;
 }

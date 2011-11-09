@@ -5,8 +5,8 @@ function Host(hostId, link) {
 			video: _nextVideoPacketInterval,
 			audio: _nextAudioPacketInterval,
 	};
-	var currentTime = 0;
-
+	var SENSE_DURATION = 0.000096;
+		
 	var _properties = {
 		id: hostId,
 		link: link,
@@ -21,24 +21,60 @@ function Host(hostId, link) {
 		distance: 0, // Distance to the current receiver
 		hosts: [], // Host on the networks
 		linkIdle: true,
-		sendNextBeat: false,
+		jam: false, // JAM signal receive
+		sendingUntil: 0,
+		lastPacketId: 0,
+		resentLast: false,
+		connected: false,
+		backoffCoeff: 0,
+		jamSignal: 0,
+	};
+	
+	/**
+	 * Sense network before sending a packet
+	 * 
+	 * @param {Integer} duration Optional sensing duration
+	 */
+	var _sense = function (duration) {
+		if (_properties.numPackets <= 0) {
+			return;
+		}
+
+		if (!duration) {
+			_properties.backoffCoeff = 0;
+			_properties.jamSignal = 0;
+			duration = CLOCK + SENSE_DURATION;
+		}
+		
+		link.push(_properties.hosts[_properties.id-1], duration, 'sense');
 	};
 	
 	/**
 	 * Send a packet to a the defined receiver
-	 * 
-	 * @param {Integer} packetLength
-	 * @param {Integer} numPacket
 	 */
 	var _send = function () {
-		var packet = Packet();
-		packet.create(_properties.hosts[_properties.id-1],
-					  _properties.hosts[_properties.receiver], 
-					  _properties.packetPayload, 
-					  _properties.errorRate);
-		link.push(packet, currentTime+_delay());
-		_properties.numPackets--;
-		_output('Sending packet #' + packet.get('id') + ' to host ' + (_properties.receiver+1) , 'info');
+		if (_properties.linkIdle) {
+			var packet = Packet();
+			packet.create(_properties.hosts[_properties.id-1],
+						  _properties.hosts[_properties.receiver], 
+						  _properties.packetPayload, 
+						  _properties.errorRate,
+						  !((!_properties.resentLast) || _properties.lastPacketId));
+			
+			_properties.resentLast = false;
+			_properties.lastPacketId = packet.get('id');
+			_properties.sendingUntil = CLOCK + _delay();
+			_properties.numPackets--;
+			
+			_output('Sending packet #' + packet.get('id') + ' to host ' + (_properties.receiver+1) , 'info');
+			link.push(packet, _properties.sendingUntil);
+			
+			// Prepare next sensing
+			_sense(_properties.sendingUntil + SENSE_DURATION);
+		} else {
+			_output('Defering sending, link in use', 'notice');
+			_sense();
+		}
 	};
 	
 	/**
@@ -47,13 +83,45 @@ function Host(hostId, link) {
 	 * @param packet Received packet
 	 */
 	var _receive = function(packet) {
-		if (!_properties.linkIdle) {
-			_output('Collision detected!', 'error');
-		}
-		
 		var haveError = (packet.crc() == packet.get('checkseq')) ? 'success' : 'error';
 		
 		_output('Received packet #' + packet.get('id') + ' from host ' + packet.get('source').get('id'), haveError);
+	};
+	
+	var _jam = function () {
+		_properties.jamSignal++;
+		
+		if (_properties.backoffCoeff > 10) {
+			_properties.backoffCoeff = 10;
+		}
+		
+		if ((_properties.sendingUntil > 0) && (_properties.sendingUntil >= CLOCK)) {
+
+			if (_properties.connected) {
+				if (_properties.jamSignal < 15) {
+					_properties.numPackets++;
+					_properties.resentLast = true;
+				} else {
+					_output('Aborting sending packet #' + _properties.lastPacketId);
+				}
+				
+				_output('Resending collided-packet #' + _properties.lastPacketId, 'error');
+				
+			} else {
+				_output('Packet #' + _properties.lastPacketId + ' has collided, backoff now at ' + _properties.backoffCoeff, 'error');
+			}
+		} else {
+			_output('Collision detected', 'notice');
+		}
+
+		_properties.sendingUntil = 0;
+		_properties.linkIdle = true;
+		
+		_properties.backoffCoeff++;
+		
+		var sensingTime = CLOCK + SENSE_DURATION + ((Math.random() * Math.pow(2, _properties.backoffCoeff)) * 0.000512);
+		
+		_sense(sensingTime);
 	};
 	
 	/**
@@ -75,33 +143,16 @@ function Host(hostId, link) {
 		return Math.ceil(65536 / _properties.packetPayload);
 	};
 	
-	var _setAction = function (actionType, hostId) {
-		_properties.dataSize = Math.ceil(Math.random() *  5000);
+	var _setAction = function (actionType, hostId, avgDataSize) {
+		var sizeVariance = 0.5 * avgDataSize;
+		_properties.dataSize = avgDataSize + Math.ceil((Math.random() *  sizeVariance) - (sizeVariance/2));
 		_properties.numPackets = Math.ceil(_properties.dataSize / _properties.packetPayload);
 		_properties.receiver = hostId;
 		_properties.distance = Math.abs(_properties.id - hostId) * _properties.hostDistance;
 		
 		_output('Will send  '+ _bytesToSize(_properties.dataSize) + ' ('+ _properties.numPackets +' packets) of ' + actionType + ' to host ' + (hostId+1));
-	};
-
-	var _heartbeat = function (time) {
-		currentTime = time;
 		
-		// If we have nothing to send
-		if (_properties.numPackets <= 0) {
-			return;
-		}
-
-		if (_properties.sendNextBeat) {
-			if (_properties.linkIdle) {
-				_send();
-				_properties.sendNextBeat = false;
-			} else {
-				_output('Defering sending, link used', 'notice');
-			}
-		} else {
-			_properties.sendNextBeat = true;
-		}
+		_sense();
 	};
 	
 	var _bytesToSize = function (bytes) {
@@ -126,7 +177,7 @@ function Host(hostId, link) {
 	
 	var _output = function (message, status) {
 		var stat = status ? ' class="'+status+'"' : '';
-		_outbox.append('<li'+stat+'>'+_roundDecimal(currentTime, 5)+': '+message+'</li>');
+		_outbox.append('<li'+stat+'>'+_roundDecimal(CLOCK, 10)+': '+message+'</li>');
 	};
 	
 	var _init = function (settings) {
@@ -136,12 +187,13 @@ function Host(hostId, link) {
 	};
 	
 	return {
+		sense: _sense,
 		send: _send,
+		jam: _jam,
 		receive: _receive,
 		get: _get,
 		set: _set,
 		setAction: _setAction,
 		init: _init,
-		heartbeat: _heartbeat,
 	};
 }

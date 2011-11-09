@@ -59,6 +59,17 @@
             <input type="text" name="packetPayload" id="packetPayload" value="1000" /> bits
           </p>
             
+          <p>
+            <label for="avgDataSize">Average data size</label>
+            <input type="text" name="avgDataSize" id="avgDataSize" value="20" />
+            <select id="avgDataSizeUnit" name="avgDataSizeUnit">
+              <option value="1">B</option>
+              <option value="1024" selected="selected">KB</option>
+              <option value="1048576">MB</option>
+              <option value="1073741824">GB</option>
+            </select>
+          </p>
+            
           <p>   
             <input type="submit" name="startSimulation" value="Launch simulation" id="startSimulation" />
           </p>

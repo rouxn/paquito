@@ -1,12 +1,10 @@
+var CLOCK = 0;
 
 var Paquito = function () {
 	var link = Link();
 	var started = false;
 	var baseHost = $('#host-1');
-	var currentTime = 0;
 	var hosts = [];
-	var MAX_UNUSED_BEAT = 50; // Number of heartbeat unused before stoping
-	var unusedBeats = 0;
 	
 	var _setSpinboxes = function () {
 		$('#numHost').spinbox({
@@ -16,6 +14,12 @@ var Paquito = function () {
 		});
 		
 		$('#bandwidth').spinbox({
+			min: 1,
+			max: 9999,
+			step: 10,
+		});
+		
+		$('#avgDataSize').spinbox({
 			min: 1,
 			max: 9999,
 			step: 10,
@@ -103,7 +107,9 @@ var Paquito = function () {
 			}
 			
 			hosts[hostId].set('hosts', hosts);
-			hosts[hostId].setAction(randomAction, randomHost);
+			
+			var avgDataSize = $('#avgDataSize').val() * $('#avgDataSizeUnit').val();
+			hosts[hostId].setAction(randomAction, randomHost, avgDataSize);
 		}
 	};
 	
@@ -125,41 +131,20 @@ var Paquito = function () {
 			_filterOutput();
 	};
 	
-	var _shuffleHosts = function () {
-		var newHosts = [];
-		for (var i=0; i < hosts.length; i++) {
-			newHosts[i] = hosts[i];
-		}
-		
-		newHosts.sort(function() { 
-			return Math.random() - 0.5;
-		});
-		
-		return newHosts;
-	};
-	
-	var _beat = function () {
-		// Shuffle hosts to avoid first hosts to be the firsts sending
-		var shuffledHosts = _shuffleHosts(); 
-		
-		for (var i=0; i < shuffledHosts.length; i++) {
-			shuffledHosts[i].heartbeat(currentTime);
-		}
-	};
-	
 	var _manageEvents = function () {
-		while (unusedBeats <= MAX_UNUSED_BEAT) {
-			currentTime += 0.0001;
-			_beat();
+		while (link.inUse()) {
+			var event = link.pop();
 			
-			if (link.topPriority() <= currentTime) {
-				var currentPacket = link.pop();
-				currentPacket.get('destination').receive(currentPacket);
-				unusedBeats = 0;
-			} else {
-				unusedBeats++;
+			CLOCK = event.clock;
+			
+			if (event.type == 'packet') {
+				link.setIdle();
+				event.object.get('destination').receive(event.object);
+			} else if (event.type == 'trafic') {
+				event.object.set('linkIdle', false);
+			} else if (event.type == 'sense') {
+				event.object.send();
 			}
-			
 		}
 	};
 	
