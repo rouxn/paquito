@@ -66,7 +66,7 @@ function Host(hostId, link) {
 			_properties.sendingUntil = CLOCK + _delay();
 			_properties.numPackets--;
 			
-			_output('Sending packet #' + packet.get('id') + ' to host ' + (_properties.receiver+1) , 'info');
+			_output('Sending packet #' + packet.get('id') + ' to host ' + (_properties.receiver+1), 'info');
 			link.push(packet, _properties.sendingUntil);
 			
 			// Prepare next sensing
@@ -90,6 +90,7 @@ function Host(hostId, link) {
 	
 	var _jam = function () {
 		_properties.jamSignal++;
+		_properties.backoffCoeff++;
 		
 		if (_properties.backoffCoeff > 10) {
 			_properties.backoffCoeff = 10;
@@ -105,19 +106,17 @@ function Host(hostId, link) {
 					_output('Aborting sending packet #' + _properties.lastPacketId);
 				}
 				
-				_output('Resending collided-packet #' + _properties.lastPacketId, 'error');
+				_output('Resending collided-packet #' + _properties.lastPacketId + ', retry #' + _properties.backoffCoeff, 'error');
 				
 			} else {
-				_output('Packet #' + _properties.lastPacketId + ' has collided, backoff now at ' + _properties.backoffCoeff, 'error');
+				_output('Packet #' + _properties.lastPacketId + ' has collided, retry #' + _properties.backoffCoeff, 'error');
 			}
 		} else {
 			_output('Collision detected', 'notice');
 		}
 
 		_properties.sendingUntil = 0;
-		_properties.linkIdle = true;
-		
-		_properties.backoffCoeff++;
+		_properties.linkIdle = false;
 		
 		var sensingTime = CLOCK + SENSE_DURATION + ((Math.random() * Math.pow(2, _properties.backoffCoeff)) * 0.000512);
 		

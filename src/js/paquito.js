@@ -137,11 +137,11 @@ var Paquito = function () {
 			
 			CLOCK = event.clock;
 			
-			if (event.type == 'packet') {
+			if (event.type == 'trafic') {
+				event.object.set('linkIdle', false);
+			} else if (event.type == 'packet') {
 				link.setIdle();
 				event.object.get('destination').receive(event.object);
-			} else if (event.type == 'trafic') {
-				event.object.set('linkIdle', false);
 			} else if (event.type == 'sense') {
 				event.object.send();
 			}

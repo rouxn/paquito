@@ -27,13 +27,14 @@
      * Set the link as in use when going through the host
      */
     var setLinkNotification = function (packet, finalClock) {
-    	var minHostId = Math.min(packet.get('source').get('id'), packet.get('destination').get('id'));
-    	var maxHostId = Math.max(packet.get('source').get('id'), packet.get('destination').get('id'));
-    	var noticeInterval = finalClock / (maxHostId - minHostId);
+    	var src = packet.get('source').get('id');
+    	var dst = packet.get('destination').get('id');
+    	var noticeInterval = (finalClock - CLOCK) / (Math.abs(src - dst) - CLOCK);
+    	var step = (src > dst) ? -1 : 1;
     	
-    	for (var hostId=minHostId; hostId < maxHostId; hostId++) {
+    	for (var hostId=src; hostId < (dst-1); hostId += step) {
     		contents.push({object: hosts[hostId], 
-    					   clock: ((hostId-minHostId)*noticeInterval), 
+    					   clock: CLOCK + (Math.abs(hostId-src)*noticeInterval), 
     					   type: 'trafic'});
     	}
     };
